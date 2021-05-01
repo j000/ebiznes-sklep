@@ -11,7 +11,7 @@ extends AbstractController(cc)
   def index(): Action[AnyContent] = Action {
     Ok(s"payment list")
   }
-  def show(id: Long): Action[AnyContent] = Action {
+  def read(id: Long): Action[AnyContent] = Action {
     Ok(s"payment $id")
   }
   def create(): Action[AnyContent] = Action {

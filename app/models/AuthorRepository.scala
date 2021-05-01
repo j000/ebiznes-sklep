@@ -6,7 +6,12 @@ import slick.jdbc.JdbcProfile
 import scala.concurrent.{ Future, ExecutionContext }
 import play.api.libs.json._
 
-case class Author(id: Long, name: String)
+case class AuthorData(name: String)
+object AuthorData {
+  implicit val authorDataFormat = Json.format[AuthorData]
+}
+
+case class Author(name: String, id: Long = 0L)
 
 object Author {
   implicit val authorFormat = Json.format[Author]
@@ -38,7 +43,7 @@ class AuthorRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(impl
       * In this case, we are simply passing the id, name and page parameters to the Author case classes
       * apply and unapply methods.
       */
-    def * = (id, name) <> ((Author.apply _).tupled, Author.unapply)
+    def * = (name, id) <> ((Author.apply _).tupled, Author.unapply)
   }
 
   /**
@@ -46,19 +51,27 @@ class AuthorRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(impl
     */
   private val authors = TableQuery[AuthorsTable]
 
-  def create(name: String): Future[Author] = db.run {
-    (authors.map(a => (a.name))
-      returning authors.map(_.id)
-      into ((name, id) => Author(id, name))
-    ) += (name)
-  }
-
-  def list(): Future[Seq[Author]] = db.run {
+  def index(): Future[Seq[Author]] = db.run {
     authors.result
   }
 
-  def get(id: Long): Future[Option[Author]] = db.run {
+  def create(author: AuthorData): Future[Author] = db.run {
+    (authors.map(_.name)
+      returning authors.map(_.id)
+      into ((name, id) => Author(name, id))
+    ) += (author.name)
+  }
+
+  def read(id: Long): Future[Option[Author]] = db.run {
     authors.filter(_.id === id).result.headOption
+  }
+
+  def update(id: Long, author: AuthorData): Future[Int] = db.run {
+    authors.filter(_.id === id).map(a => (a.name).mapTo[AuthorData]).update(author)
+  }
+
+  def delete(id: Long): Future[Int] = db.run {
+    authors.filter(_.id === id).delete
   }
 }
 
