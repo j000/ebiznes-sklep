@@ -21,8 +21,7 @@ class AuthorController @Inject()(
     }
   }
   def create() = Action(parse.json).async { implicit request =>
-    val authorResult = request.body.validate[AuthorData]
-    authorResult.fold(
+    request.body.validate[AuthorData].fold(
       errors => {
         Future(BadRequest(Json.obj("error" -> JsError.toJson(errors))))
       },
@@ -45,7 +44,7 @@ class AuthorController @Inject()(
     val authorResult = request.body.validate[AuthorData]
     authorResult.fold(
       errors => {
-        Future(BadRequest(Json.obj("error" -> JsError.toJson(errors))))
+        Future(BadRequest(Json.obj("error" -> "Invalid Json")))
       },
       authorData => {
         repo.update(id, authorData).map {
