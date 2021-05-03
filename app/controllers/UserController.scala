@@ -2,7 +2,7 @@ package controllers
 
 import javax.inject._
 import play.api.mvc.{Action, AnyContent}
-import play.api.mvc.{AbstractController, ControllerComponents}
+import play.api.mvc.{InjectedController, ControllerComponents}
 import play.api.libs.json._
 import play.api.mvc.Request
 import models.{User,UserRepository}
@@ -12,10 +12,9 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class UserController @Inject()(
   val repo: UserRepository,
-  val cc: ControllerComponents
 )(
   implicit ec: ExecutionContext
-) extends AbstractController(cc)
+) extends InjectedController
 {
   type UserDBO = repo.UserDBO
 
