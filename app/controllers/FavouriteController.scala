@@ -2,25 +2,62 @@ package controllers
 
 import javax.inject._
 import play.api.mvc.{Action, AnyContent}
-import play.api.mvc.{AbstractController, ControllerComponents}
+import play.api.mvc.{InjectedController, ControllerComponents}
+import play.api.libs.json._
+import play.api.mvc.Request
+import models.FavouriteModel._
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class FavouriteController @Inject()(val cc: ControllerComponents)
-extends AbstractController(cc)
+class FavouriteController @Inject()(
+  val repo: FavouriteRepository,
+)(
+  implicit ec: ExecutionContext
+) extends InjectedController
 {
-  def index(): Action[AnyContent] = Action {
-    Ok(s"favourite list")
+  type FavouriteDBO = repo.DBO
+
+  def index() = Action.async {
+    repo.index().map { favourites =>
+      Ok(Json.toJson(favourites))
+    }
   }
-  def read(id: Long): Action[AnyContent] = Action {
-    Ok(s"favourite $id")
+  def create() = Action(parse.json).async { request =>
+    request.body.validate[Favourite].fold(
+      problems => {
+        Future(BadRequest("Invalid json content"))
+      },
+      input => {
+        repo.create(input).map {
+          favourite => Ok(Json.toJson(favourite))
+        }
+      }
+    )
   }
-  def create(): Action[AnyContent] = Action {
-    Ok(s"favourite created");
+  def read(id: Long) = Action.async {
+    repo.read(id).map {
+      case Some(favourite) => Ok(Json.toJson(favourite))
+      case _ => NotFound(Json.obj("error" -> "Not Found"))
+    }
   }
-  def update(id: Long): Action[AnyContent] = Action {
-    Ok(s"favourite $id updated")
+  def update(id: Long) = Action(parse.json).async { implicit request =>
+    val favouriteResult = request.body.validate[Favourite]
+    favouriteResult.fold(
+      errors => {
+        Future(BadRequest(Json.obj("error" -> "Invalid Json")))
+      },
+      favouriteData => {
+        repo.update(id, favouriteData).map {
+          case None => NotFound(Json.obj("error" -> "Not Found"))
+          case favourite => Ok(Json.toJson(favourite))
+        }
+      }
+    )
   }
-  def delete(id: Long): Action[AnyContent] = Action {
-    Ok(s"favourite $id deleted")
+  def delete(id: Long) = Action.async {
+    repo.delete(id).map {
+      case 0 => NotFound(Json.obj("error" -> "Not Found"))
+      case _ => Ok(s"favourite $id deleted")
+    }
   }
 }
