@@ -2,54 +2,54 @@ package controllers
 
 import javax.inject._
 import play.api.mvc.{Action, AnyContent}
-import play.api.mvc.{AbstractController, ControllerComponents}
+import play.api.mvc.{InjectedController, ControllerComponents}
 import play.api.libs.json._
-import models.{Author,AuthorData,AuthorRepository}
+import play.api.mvc.Request
+import models.AuthorModel._
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class AuthorController @Inject()(
   val repo: AuthorRepository,
-  val cc: ControllerComponents
 )(
   implicit ec: ExecutionContext
-) extends AbstractController(cc)
+) extends InjectedController
 {
-  def index = Action.async {
+  type AuthorDBO = repo.DBO
+
+  def index() = Action.async {
     repo.index().map { authors =>
       Ok(Json.toJson(authors))
     }
   }
-  def create() = Action(parse.json).async { implicit request =>
-    request.body.validate[AuthorData].fold(
-      errors => {
-        Future(BadRequest(Json.obj("error" -> JsError.toJson(errors))))
+  def create() = Action(parse.json).async { request =>
+    request.body.validate[Author].fold(
+      problems => {
+        Future(BadRequest("Invalid json content"))
       },
-      authorData => {
-        repo.create(authorData).map { author =>
-          Ok(s"author ${author.id} created")
+      input => {
+        repo.create(input).map {
+          author => Ok(Json.toJson(author))
         }
       }
     )
   }
   def read(id: Long) = Action.async {
-    repo.read(id).map { author =>
-      if (author == None)
-        NotFound(Json.obj("error" -> "Not Found"))
-      else
-        Ok(Json.toJson(author))
+    repo.read(id).map {
+      case Some(author) => Ok(Json.toJson(author))
+      case _ => NotFound(Json.obj("error" -> "Not Found"))
     }
   }
   def update(id: Long) = Action(parse.json).async { implicit request =>
-    val authorResult = request.body.validate[AuthorData]
+    val authorResult = request.body.validate[Author]
     authorResult.fold(
       errors => {
         Future(BadRequest(Json.obj("error" -> "Invalid Json")))
       },
       authorData => {
         repo.update(id, authorData).map {
-          case 0 => NotFound(Json.obj("error" -> "Not Found"))
-          case _ => Ok(s"author ${id} updated")
+          case None => NotFound(Json.obj("error" -> "Not Found"))
+          case author => Ok(Json.toJson(author))
         }
       }
     )

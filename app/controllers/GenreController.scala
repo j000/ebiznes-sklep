@@ -2,54 +2,54 @@ package controllers
 
 import javax.inject._
 import play.api.mvc.{Action, AnyContent}
-import play.api.mvc.{AbstractController, ControllerComponents}
+import play.api.mvc.{InjectedController, ControllerComponents}
 import play.api.libs.json._
-import models.{Genre,GenreData,GenreRepository}
+import play.api.mvc.Request
+import models.GenreModel._
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class GenreController @Inject()(
   val repo: GenreRepository,
-  val cc: ControllerComponents
 )(
   implicit ec: ExecutionContext
-) extends AbstractController(cc)
+) extends InjectedController
 {
-  def index = Action.async {
+  type GenreDBO = repo.DBO
+
+  def index() = Action.async {
     repo.index().map { genres =>
       Ok(Json.toJson(genres))
     }
   }
-  def create() = Action(parse.json).async { implicit request =>
-    request.body.validate[GenreData].fold(
-      errors => {
-        Future(BadRequest(Json.obj("error" -> JsError.toJson(errors))))
+  def create() = Action(parse.json).async { request =>
+    request.body.validate[Genre].fold(
+      problems => {
+        Future(BadRequest("Invalid json content"))
       },
-      genreData => {
-        repo.create(genreData).map { genre =>
-          Ok(s"genre ${genre.id} created")
+      input => {
+        repo.create(input).map {
+          genre => Ok(Json.toJson(genre))
         }
       }
     )
   }
   def read(id: Long) = Action.async {
-    repo.read(id).map { genre =>
-      if (genre == None)
-        NotFound(Json.obj("error" -> "Not Found"))
-      else
-        Ok(Json.toJson(genre))
+    repo.read(id).map {
+      case Some(genre) => Ok(Json.toJson(genre))
+      case _ => NotFound(Json.obj("error" -> "Not Found"))
     }
   }
   def update(id: Long) = Action(parse.json).async { implicit request =>
-    val genreResult = request.body.validate[GenreData]
+    val genreResult = request.body.validate[Genre]
     genreResult.fold(
       errors => {
         Future(BadRequest(Json.obj("error" -> "Invalid Json")))
       },
       genreData => {
         repo.update(id, genreData).map {
-          case 0 => NotFound(Json.obj("error" -> "Not Found"))
-          case _ => Ok(s"genre ${id} updated")
+          case None => NotFound(Json.obj("error" -> "Not Found"))
+          case genre => Ok(Json.toJson(genre))
         }
       }
     )

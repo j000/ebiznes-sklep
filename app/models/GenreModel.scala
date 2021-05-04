@@ -1,60 +1,50 @@
-package models
+package models.GenreModel
 
-import javax.inject.{ Inject, Singleton }
-import play.api.db.slick.DatabaseConfigProvider
-import slick.jdbc.JdbcProfile
+import scala.language.postfixOps
+import models.SlickProfile.api._
+import models.CRUDRepository
+import slick.additions.entity._
 import scala.concurrent.{ Future, ExecutionContext }
+import javax.inject.{ Inject, Singleton }
+import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfig}
+import slick.jdbc.JdbcProfile
 import play.api.libs.json._
+import play.api.libs.functional.syntax._
 
-case class GenreData(name: String)
-object GenreData {
-  implicit val genreDataFormat = Json.format[GenreData]
-}
+case class Genre(name: String)
 
-case class Genre(name: String, id: Long = 0L)
-
-object Genre {
-  implicit val genreFormat = Json.format[Genre]
+object Genres extends EntityTableModule[Long, Genre]("Genres") {
+  class Row(tag: Tag) extends BaseEntRow(tag) with AutoNameSnakify {
+    def name = column[String]("name")
+    def mapping = (name).mapTo[Genre]
+  }
 }
 
 @Singleton
-class GenreRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) {
-  private val dbConfig = dbConfigProvider.get[JdbcProfile]
-
-  import dbConfig._
-  import profile.api._
-
-  private class GenresTable(tag: Tag) extends Table[Genre](tag, "Genres") {
-
-    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
-    def name = column[String]("name")
-
-    def * = (name, id) <> ((Genre.apply _).tupled, Genre.unapply)
-  }
-
-  private val genres = TableQuery[GenresTable]
-
-  def index(): Future[Seq[Genre]] = db.run {
-    genres.result
-  }
-
-  def create(genre: GenreData): Future[Genre] = db.run {
-    (genres.map(_.name)
-      returning genres.map(_.id)
-      into ((name, id) => Genre(name, id))
-    ) += (genre.name)
-  }
-
-  def read(id: Long): Future[Option[Genre]] = db.run {
-    genres.filter(_.id === id).result.headOption
-  }
-
-  def update(id: Long, genre: GenreData): Future[Int] = db.run {
-    genres.filter(_.id === id).map(a => (a.name).mapTo[GenreData]).update(genre)
-  }
-
-  def delete(id: Long): Future[Int] = db.run {
-    genres.filter(_.id === id).delete
+class GenreRepository @Inject() (
+  dbConfigProvider: DatabaseConfigProvider,
+)(
+  implicit ec: ExecutionContext,
+) extends CRUDRepository[Genre](Genres, dbConfigProvider)
+{
+  def update(id: Long, data: Genre): Future[Option[DBO]] = db run {
+    Genres.Q.filter(_.key === id).map(_.mapping) update (data) map {
+      case 0 => None
+      case _ => Some(SavedEntity[Long, Genre](id, data))
+    }
   }
 }
 
+object Genre extends ((String) => Genre) {
+  implicit val _genre = Json.format[Genre]
+
+  implicit val _writes: Writes[KeyedEntity[Long, Genre]] = (
+    (JsPath \ "id").write[Long] and
+    (JsPath).write[Genre]
+  )(unlift(KeyedEntity.unapply[Long, Genre]))
+  implicit val _reads: Reads[KeyedEntity[Long, Genre]] = (
+    (JsPath \ "id").read[Long] and
+    (JsPath).read[Genre]
+  )(KeyedEntity.apply[Long, Genre] _)
+  implicit val _format: Format[KeyedEntity[Long, Genre]] = Format(_reads, _writes)
+}
