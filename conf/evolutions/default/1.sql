@@ -7,4 +7,4 @@ CREATE TABLE "Authors" (
 
 -- !Downs
 
-DROP TABLE "Authors" IF EXISTS;
+DROP TABLE "Authors";

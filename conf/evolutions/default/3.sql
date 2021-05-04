@@ -8,4 +8,4 @@ CREATE TABLE "Users" (
 
 -- !Downs
 
-DROP TABLE "Users" IF EXISTS;
+DROP TABLE "Users";

@@ -7,4 +7,4 @@ CREATE TABLE "Genres" (
 
 -- !Downs
 
-DROP TABLE "Genres" IF EXISTS;
+DROP TABLE "Genres";
