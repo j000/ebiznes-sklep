@@ -1,18 +1,19 @@
-package models
+package models.UserModel
 
 import scala.language.postfixOps
-import SlickProfile.api._
+import models.SlickProfile.api._
+import models.CRUDRepository
 import slick.additions.entity._
 import scala.concurrent.{ Future, ExecutionContext }
 import javax.inject.{ Inject, Singleton }
-import play.api.db.slick.DatabaseConfigProvider
+import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfig}
 import slick.jdbc.JdbcProfile
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
 case class User(login: String, password: String)
 
-private object Users extends EntityTableModule[Long, User]("Users") {
+object Users extends EntityTableModule[Long, User]("Users") {
   class Row(tag: Tag) extends BaseEntRow(tag) with AutoNameSnakify {
     val login = col[String]
     val password = col[String]
@@ -22,58 +23,29 @@ private object Users extends EntityTableModule[Long, User]("Users") {
 
 @Singleton
 class UserRepository @Inject() (
-  dbConfigProvider: DatabaseConfigProvider
+  dbConfigProvider: DatabaseConfigProvider,
 )(
-  implicit ec: ExecutionContext
-){
-  type UserDBO = KeyedEntity[Long, User]
-
-  private val dbConfig = dbConfigProvider.get[JdbcProfile]
-
-  import dbConfig._
-  import profile.api._
-
-  def index(): Future[Seq[UserDBO]] = db run {
-    Users.Q result
-  }
-
-  def create(user: User): Future[UserDBO] = db run {
-    Users.Q insert user
-  }
-
-  def read(id: Long): Future[Option[UserDBO]] = db run {
-    // TODO how to skip dots here?
-    Users.Q.filter(_.key === id).result.headOption
-  }
-
-  def update(id: Long, user: User): Future[Option[UserDBO]] = db run {
-    Users.Q.filter(_.key === id).map(_.mapping) update (user) map {
+  implicit ec: ExecutionContext,
+) extends CRUDRepository[User](Users, dbConfigProvider)
+{
+  def update(id: Long, data: User): Future[Option[DBO]] = db run {
+    Users.Q.filter(_.key === id).map(_.mapping) update (data) map {
       case 0 => None
-      case _ => Some(SavedEntity[Long, User](id, user))
+      case _ => Some(SavedEntity[Long, User](id, data))
     }
-  }
-
-  def update(user: UserDBO): Future[Option[UserDBO]] = db run {
-    Users.Q insert user map { Some(_) }
-  }
-
-  def delete(id: Long): Future[Int] = db run {
-    Users.Q.filter(_.key === id) delete
   }
 }
 
-object UserJson {
-  type UserDBO = KeyedEntity[Long, User]
-
+object User extends ((String, String) => User) {
   implicit val _user = Json.format[User]
 
-  implicit val _writes: Writes[UserDBO] = (
+  implicit val _writes: Writes[KeyedEntity[Long, User]] = (
     (JsPath \ "id").write[Long] and
     (JsPath).write[User]
   )(unlift(KeyedEntity.unapply[Long, User]))
-  implicit val _reads: Reads[UserDBO] = (
+  implicit val _reads: Reads[KeyedEntity[Long, User]] = (
     (JsPath \ "id").read[Long] and
     (JsPath).read[User]
   )(KeyedEntity.apply[Long, User] _)
-  implicit val _format: Format[UserDBO] = Format(_reads, _writes)
+  implicit val _format: Format[KeyedEntity[Long, User]] = Format(_reads, _writes)
 }

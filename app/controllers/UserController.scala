@@ -5,8 +5,7 @@ import play.api.mvc.{Action, AnyContent}
 import play.api.mvc.{InjectedController, ControllerComponents}
 import play.api.libs.json._
 import play.api.mvc.Request
-import models.{User,UserRepository}
-import models.UserJson._
+import models.UserModel._
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -16,7 +15,7 @@ class UserController @Inject()(
   implicit ec: ExecutionContext
 ) extends InjectedController
 {
-  type UserDBO = repo.UserDBO
+  type UserDBO = repo.DBO
 
   def index() = Action.async {
     repo.index().map { users =>
