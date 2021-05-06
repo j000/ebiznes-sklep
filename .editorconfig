@@ -8,3 +8,5 @@ indent_style = tab
 indent_size = 2
 [*.sql]
 indent_style = space
+[*.scala]
+indent_style = space
