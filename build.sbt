@@ -19,7 +19,7 @@ libraryDependencies += "io.github.nafg" %% "slick-additions" % "0.11.1"
 libraryDependencies += "io.github.nafg" %% "slick-additions-entity" % "0.11.1"
 
 // Adds additional packages into Twirl
-//TwirlKeys.templateImports += "com.example.controllers._"
+TwirlKeys.templateImports += "helpers._"
 
 // Adds additional packages into conf/routes
 // play.sbt.routes.RoutesKeys.routesImport += "com.example.binders._"

@@ -1,0 +1,10 @@
+@(elements: helper.FieldElements)
+
+<label for="@elements.id">@elements.label</label>
+@elements.input
+@elements.errors.map { error =>
+	<div class="right error">@error</div>
+}
+@elements.infos.map { info =>
+	<div class="right help">@info</div>
+}
