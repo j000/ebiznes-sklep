@@ -1,6 +1,6 @@
 @(target: play.api.mvc.Call)(implicit request: MessagesRequestHeader)
 @form(target,
-	Symbol("class") -> "inline",
+	Symbol("class") -> "inline float-right",
 	Symbol("onsubmit") -> "return confirm('This action cannot be undone.\\nAre you sure?')"
 	) {
 	@CSRF.formField
