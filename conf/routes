@@ -65,4 +65,11 @@ POST   /author/$id<[1-9][0-9]*>         controllers.AuthorController.updateForm(
 GET    /author/$id<[1-9][0-9]*>         controllers.AuthorController.editForm(id: Long)
 POST   /author/$id<[1-9][0-9]*>/delete  controllers.AuthorController.deleteForm(id: Long)
 
+GET    /genre                           controllers.GenreController.listForm()
+POST   /genre/new                       controllers.GenreController.saveForm()
+GET    /genre/new                       controllers.GenreController.createForm()
+POST   /genre/$id<[1-9][0-9]*>          controllers.GenreController.updateForm(id: Long)
+GET    /genre/$id<[1-9][0-9]*>          controllers.GenreController.editForm(id: Long)
+POST   /genre/$id<[1-9][0-9]*>/delete   controllers.GenreController.deleteForm(id: Long)
+
 GET    /*file                           controllers.Assets.at(path="/public", file)

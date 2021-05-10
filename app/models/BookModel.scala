@@ -11,8 +11,6 @@ import slick.jdbc.JdbcProfile
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
-import models.GenreModel.Genres
-
 case class Book(title: String, author_id: Long, genre_id: Long, price: Long)
 
 object Books extends EntityTableModule[Long, Book]("Books") {

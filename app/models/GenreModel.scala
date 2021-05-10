@@ -1,64 +1,44 @@
 package models.GenreModel
 
-import scala.language.postfixOps
-import models.SlickProfile.api._
-import models.CRUDRepository
-import slick.additions.entity._
-import scala.concurrent.{ ExecutionContext, Future }
-import javax.inject.{ Inject, Singleton }
-import play.api.db.slick.{ DatabaseConfigProvider, HasDatabaseConfig }
-import slick.jdbc.JdbcProfile
+import com.byteslounge.slickrepo.meta.{ Entity, Keyed }
 import play.api.libs.json._
-import play.api.libs.functional.syntax._
 
-case class Genre(name: String)
+case class Genre(override val id: Option[Long], name: String)
+  extends Entity[Genre, Long] {
+  def withId(id: Long): Genre = this.copy(id = Some(id))
+}
 
-object Genres extends EntityTableModule[Long, Genre]("Genres") {
+object Genre {
+  implicit val _genre = Json.format[Genre]
+}
 
-  class Row(tag: Tag) extends BaseEntRow(tag) with AutoNameSnakify {
+import com.byteslounge.slickrepo.meta.Keyed
+import com.byteslounge.slickrepo.repository.Repository
+import com.google.inject.Inject
+import play.api.db.slick.DatabaseConfigProvider
+import slick.ast.BaseTypedType
+import slick.jdbc.JdbcProfile
+import scala.concurrent.Future
+
+class GenreRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)
+  extends Repository[Genre, Long] {
+
+  val driver = dbConfigProvider.get[JdbcProfile].profile
+  import driver.api._
+  val pkType = implicitly[BaseTypedType[Long]]
+  val tableQuery = TableQuery[Genres]
+  type TableType = Genres
+
+  class Genres(tag: slick.lifted.Tag)
+    extends Table[Genre](tag, "Genres")
+    with Keyed[Long] {
+    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def name = column[String]("name")
-    def mapping = (name).mapTo[Genre]
+    def * = (id.?, name) <> ((Genre.apply _).tupled, Genre.unapply)
   }
 
-}
-
-@Singleton
-class GenreRepository @Inject() (
-  dbConfigProvider: DatabaseConfigProvider,
-)(
-  implicit
-  ec: ExecutionContext,
-) extends CRUDRepository[Genre](Genres, dbConfigProvider) {
-
-  def update(id: Long, data: Genre): Future[Option[DBO]] =
-    db run {
-      Genres.Q.filter(_.key === id).map(_.mapping) update
-        (data) map {
-          case 0 =>
-            None
-          case _ =>
-            Some(SavedEntity[Long, Genre](id, data))
-        }
-    }
-
-}
-
-object Genre extends ((String) => Genre) {
-  implicit val _genre = Json.format[Genre]
-
-  implicit val _writes: Writes[KeyedEntity[Long, Genre]] =
-    ((JsPath \ "id").write[Long] and (JsPath).write[Genre])(
-      unlift(KeyedEntity.unapply[Long, Genre]),
-    )
-
-  implicit val _reads: Reads[KeyedEntity[Long, Genre]] =
-    ((JsPath \ "id").read[Long] and (JsPath).read[Genre])(
-      KeyedEntity.apply[Long, Genre] _,
-    )
-
-  implicit val _format: Format[KeyedEntity[Long, Genre]] = Format(
-    _reads,
-    _writes,
-  )
+  def delete(id: Long): DBIO[Int] = {
+    findOneCompiled(id).delete
+  }
 
 }
