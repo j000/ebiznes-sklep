@@ -17,6 +17,7 @@ libraryDependencies += "com.typesafe.play" %% "play-slick-evolutions" % "5.0.0"
 libraryDependencies += evolutions
 libraryDependencies += "io.github.nafg" %% "slick-additions" % "0.11.1"
 libraryDependencies += "io.github.nafg" %% "slick-additions-entity" % "0.11.1"
+libraryDependencies += "com.byteslounge" %% "slick-repo" % "1.6.1"
 
 // Adds additional packages into Twirl
 TwirlKeys.templateImports += "helpers._"
@@ -24,3 +25,8 @@ TwirlKeys.templateImports += "helpers._"
 // Adds additional packages into conf/routes
 // play.sbt.routes.RoutesKeys.routesImport += "com.example.binders._"
 
+// no doc in dist
+Compile / doc / sources := Seq.empty
+Compile / packageDoc / publishArtifact := false
+// auto-reload
+Global / onChangedBuildSource := ReloadOnSourceChanges

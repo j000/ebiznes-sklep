@@ -1,64 +1,44 @@
 package models.AuthorModel
 
-import scala.language.postfixOps
-import models.SlickProfile.api._
-import models.CRUDRepository
-import slick.additions.entity._
-import scala.concurrent.{ ExecutionContext, Future }
-import javax.inject.{ Inject, Singleton }
-import play.api.db.slick.{ DatabaseConfigProvider, HasDatabaseConfig }
-import slick.jdbc.JdbcProfile
+import com.byteslounge.slickrepo.meta.{ Entity, Keyed }
 import play.api.libs.json._
-import play.api.libs.functional.syntax._
 
-case class Author(name: String)
+case class Author(override val id: Option[Long], name: String)
+  extends Entity[Author, Long] {
+  def withId(id: Long): Author = this.copy(id = Some(id))
+}
 
-object Authors extends EntityTableModule[Long, Author]("Authors") {
+object Author {
+  implicit val _author = Json.format[Author]
+}
 
-  class Row(tag: Tag) extends BaseEntRow(tag) with AutoNameSnakify {
+import com.byteslounge.slickrepo.meta.Keyed
+import com.byteslounge.slickrepo.repository.Repository
+import com.google.inject.Inject
+import play.api.db.slick.DatabaseConfigProvider
+import slick.ast.BaseTypedType
+import slick.jdbc.JdbcProfile
+import scala.concurrent.Future
+
+class AuthorRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)
+  extends Repository[Author, Long] {
+
+  val driver = dbConfigProvider.get[JdbcProfile].profile
+  import driver.api._
+  val pkType = implicitly[BaseTypedType[Long]]
+  val tableQuery = TableQuery[Authors]
+  type TableType = Authors
+
+  class Authors(tag: slick.lifted.Tag)
+    extends Table[Author](tag, "Authors")
+    with Keyed[Long] {
+    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def name = column[String]("name")
-    def mapping = (name).mapTo[Author]
+    def * = (id.?, name) <> ((Author.apply _).tupled, Author.unapply)
   }
 
-}
-
-@Singleton
-class AuthorRepository @Inject() (
-  dbConfigProvider: DatabaseConfigProvider,
-)(
-  implicit
-  ec: ExecutionContext,
-) extends CRUDRepository[Author](Authors, dbConfigProvider) {
-
-  def update(id: Long, data: Author): Future[Option[DBO]] =
-    db run {
-      Authors.Q.filter(_.key === id).map(_.mapping) update
-        (data) map {
-          case 0 =>
-            None
-          case _ =>
-            Some(SavedEntity[Long, Author](id, data))
-        }
-    }
-
-}
-
-object Author extends ((String) => Author) {
-  implicit val _author = Json.format[Author]
-
-  implicit val _writes: Writes[KeyedEntity[Long, Author]] =
-    ((JsPath \ "id").write[Long] and (JsPath).write[Author])(
-      unlift(KeyedEntity.unapply[Long, Author]),
-    )
-
-  implicit val _reads: Reads[KeyedEntity[Long, Author]] =
-    ((JsPath \ "id").read[Long] and (JsPath).read[Author])(
-      KeyedEntity.apply[Long, Author] _,
-    )
-
-  implicit val _format: Format[KeyedEntity[Long, Author]] = Format(
-    _reads,
-    _writes,
-  )
+  def delete(id: Long): DBIO[Int] = {
+    findOneCompiled(id).delete
+  }
 
 }

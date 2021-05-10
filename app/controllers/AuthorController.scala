@@ -4,38 +4,42 @@ import javax.inject._
 import play.api.mvc.{ Action, AnyContent }
 import play.api.mvc.{ ControllerComponents, InjectedController }
 import play.api.libs.json._
-import play.api.mvc.Request
+import play.api.mvc.{ MessagesActionBuilder, MessagesRequest, Request, Result }
 import models.AuthorModel._
 import scala.concurrent.{ ExecutionContext, Future }
+import play.api.data.Forms._
+import play.api.data.Form
+import scala.util.{ Failure, Success }
+import utils.DBImplicits
 
 @Singleton
 class AuthorController @Inject() (
-  val repo: AuthorRepository,
+  repo: AuthorRepository,
+  messagesAction: MessagesActionBuilder,
+  dbExecuter: DBImplicits,
 )(
   implicit
   ec: ExecutionContext,
 ) extends InjectedController {
-  type AuthorDBO = repo.DBO
+  import dbExecuter.executeOperation
 
   def index() = Action.async {
     repo
-      .index()
+      .findAll()
       .map { authors =>
         Ok(Json.toJson(authors))
       }
   }
 
-  def create() = Action(parse.json).async { request =>
+  def create() = Action(parse.json).async { implicit request =>
     request
       .body
       .validate[Author]
       .fold(
-        problems => {
-          Future(BadRequest("Invalid json content"))
-        },
+        problems => Future(BadRequest("Invalid json content")),
         input => {
           repo
-            .create(input)
+            .save(input.copy(id = None))
             .map { author =>
               Ok(Json.toJson(author))
             }
@@ -45,7 +49,7 @@ class AuthorController @Inject() (
 
   def read(id: Long) = Action.async {
     repo
-      .read(id)
+      .findOne(id)
       .map {
         case Some(author) =>
           Ok(Json.toJson(author))
@@ -62,12 +66,9 @@ class AuthorController @Inject() (
       },
       authorData => {
         repo
-          .update(id, authorData)
-          .map {
-            case None =>
-              NotFound(Json.obj("error" -> "Not Found"))
-            case author =>
-              Ok(Json.toJson(author))
+          .update(authorData.withId(id))
+          .map { author =>
+            Ok(Json.toJson(author))
           }
       },
     )
