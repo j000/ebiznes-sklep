@@ -85,4 +85,85 @@ class AuthorController @Inject() (
       }
   }
 
+  val form = Form(
+    mapping("id" -> ignored(None: Option[Long]), "name" -> nonEmptyText)(
+      Author.apply,
+    )(Author.unapply),
+  )
+
+  def listForm(
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    repo
+      .findAll()
+      .map { authors =>
+        Ok(views.html.author.list(authors))
+      }
+  }
+
+  def saveForm(
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    val formValidationResult = form.bindFromRequest()
+    formValidationResult.fold(
+      { formWithErrors: Form[Author] =>
+        Future(BadRequest(views.html.author.add(formWithErrors)))
+      },
+      { data: Author =>
+        repo
+          .save(data.copy(id = None))
+          .map { _ =>
+            Redirect(routes.AuthorController.listForm())
+              .flashing("info" -> "Author added!")
+          }
+      },
+    )
+  }
+
+  def createForm(
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    Future(Ok(views.html.author.add(form)))
+  }
+
+  def updateForm(
+    id: Long,
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    val formValidationResult = form.bindFromRequest()
+    formValidationResult.fold(
+      { formWithErrors: Form[Author] =>
+        Future(BadRequest(views.html.author.edit(id, formWithErrors)))
+      },
+      { data: Author =>
+        repo
+          .update(data.withId(id))
+          .map { _ =>
+            Redirect(routes.AuthorController.listForm())
+              .flashing("info" -> "Author modified!")
+          }
+      },
+    )
+  }
+
+  def editForm(
+    id: Long,
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    repo
+      .findOne(id)
+      .map {
+        case Some(data) =>
+          Ok(views.html.author.edit(id, form.fill(data)))
+        case None =>
+          NotFound
+      }
+  }
+
+  def deleteForm(
+    id: Long,
+  ) = Action.async {
+    repo
+      .delete(id)
+      .map { _ =>
+        Redirect(routes.AuthorController.listForm())
+          .flashing("info" -> "Author deleted!")
+      }
+  }
+
 }

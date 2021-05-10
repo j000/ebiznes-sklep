@@ -18,9 +18,13 @@ libraryDependencies += evolutions
 libraryDependencies += "io.github.nafg" %% "slick-additions" % "0.11.1"
 libraryDependencies += "io.github.nafg" %% "slick-additions-entity" % "0.11.1"
 libraryDependencies += "com.byteslounge" %% "slick-repo" % "1.6.1"
+libraryDependencies += "org.webjars.npm" % "normalize.css" % "8.0.1"
+libraryDependencies += "org.webjars.npm" % "milligram" % "1.3.0"
 
 // Adds additional packages into Twirl
 TwirlKeys.templateImports += "helpers._"
+TwirlKeys.templateImports += "components._"
+TwirlKeys.templateImports += "views.html.helper._"
 
 // Adds additional packages into conf/routes
 // play.sbt.routes.RoutesKeys.routesImport += "com.example.binders._"

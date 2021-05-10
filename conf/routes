@@ -57,3 +57,12 @@ POST   /api/collection                  controllers.CollectionController.create(
 GET    /api/collection/$id<[1-9][0-9]*> controllers.CollectionController.read(id: Long)
 PUT    /api/collection/$id<[1-9][0-9]*> controllers.CollectionController.update(id: Long)
 DELETE /api/collection/$id<[1-9][0-9]*> controllers.CollectionController.delete(id: Long)
+
+GET    /author                          controllers.AuthorController.listForm()
+POST   /author/new                      controllers.AuthorController.saveForm()
+GET    /author/new                      controllers.AuthorController.createForm()
+POST   /author/$id<[1-9][0-9]*>         controllers.AuthorController.updateForm(id: Long)
+GET    /author/$id<[1-9][0-9]*>         controllers.AuthorController.editForm(id: Long)
+POST   /author/$id<[1-9][0-9]*>/delete  controllers.AuthorController.deleteForm(id: Long)
+
+GET    /*file                           controllers.Assets.at(path="/public", file)

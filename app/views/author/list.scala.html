@@ -1,0 +1,34 @@
+@import models.AuthorModel.Author
+@(authors: Seq[Author])(implicit request: MessagesRequestHeader)
+@main("Authors") {
+<div class="container">
+	<h1>Authors</h1>
+	@* Flash shows updates to a page *@
+	@request.flash.data.map{ case (name, value) =>
+		<div>@name: @value</div>
+	}
+	<table class="with-buttons">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>Name</th>
+				<th></th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@authors.map { a =>
+				<tr>
+					<td>@a.id</td>
+					<td>@a.name</td>
+					<td><a class="button" href="@routes.AuthorController.editForm(a.id.get)">Edit</a></td>
+					<td>
+						@delete(routes.AuthorController.deleteForm(a.id.get))
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+	<a class="button" href="@routes.AuthorController.createForm()">New</a>
+</div>
+}
