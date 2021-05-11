@@ -4,6 +4,8 @@ import javax.inject._
 import play.api.mvc._
 import play.api.libs.json._
 import models.BookModel._
+import models.AuthorModel._
+import models.GenreModel._
 import scala.concurrent.{ ExecutionContext, Future }
 import play.api.data.Forms._
 import play.api.data.Form
@@ -14,6 +16,8 @@ class BookController @Inject() (
   repo: BookRepository,
   messagesAction: MessagesActionBuilder,
   dbExecuter: DBImplicits,
+  authorRepo: AuthorRepository,
+  genreRepo: GenreRepository,
 )(
   implicit
   ec: ExecutionContext,
@@ -34,7 +38,7 @@ class BookController @Inject() (
       .body
       .validate[Book]
       .fold(
-        problems => Future(BadRequest("Invalid json content")),
+        problems => Future.successful(BadRequest("Invalid json content")),
         input => {
           repo
             .save(input.copy(id = None))
@@ -60,7 +64,7 @@ class BookController @Inject() (
     val bookResult = request.body.validate[Book]
     bookResult.fold(
       errors => {
-        Future(BadRequest(Json.obj("error" -> "Invalid Json")))
+        Future.successful(BadRequest(Json.obj("error" -> "Invalid Json")))
       },
       bookData => {
         repo
@@ -107,7 +111,7 @@ class BookController @Inject() (
     val formValidationResult = form.bindFromRequest()
     formValidationResult.fold(
       { formWithErrors: Form[Book] =>
-        Future(BadRequest(addView(formWithErrors)))
+        Future.successful(BadRequest(addView(formWithErrors, Seq[(String, String)](), Seq[(String, String)]())))
       },
       { data: Book =>
         repo
@@ -122,16 +126,33 @@ class BookController @Inject() (
 
   def createForm(
   ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
-    Future(Ok(addView(form)))
+    val authors: Future[Seq[Author]] = authorRepo.findAll()
+    val genres: Future[Seq[Genre]] = genreRepo.findAll()
+
+    authors.flatMap { authors =>
+      val authorOptions = authors.map(a => (a.id.get.toString, a.name));
+      genres.map { genres =>
+        val genresOptions = genres.map(g => (g.id.get.toString, g.name));
+        Ok(addView(form, authorOptions, genresOptions))
+      }
+    }
   }
 
   def updateForm(
     id: Long,
   ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
-    val formValidationResult = form.bindFromRequest()
-    formValidationResult.fold(
+    form.bindFromRequest().fold(
       { formWithErrors: Form[Book] =>
-        Future(BadRequest(editView(id, formWithErrors)))
+        val authors: Future[Seq[Author]] = authorRepo.findAll()
+        val genres: Future[Seq[Genre]] = genreRepo.findAll()
+
+        authors.flatMap { authors =>
+          val authorOptions = authors.map(a => (a.id.get.toString, a.name));
+          genres.map { genres =>
+            val genresOptions = genres.map(g => (g.id.get.toString, g.name));
+            BadRequest(editView(id, formWithErrors, authorOptions, genresOptions))
+          }
+        }
       },
       { data: Book =>
         repo
@@ -147,13 +168,20 @@ class BookController @Inject() (
   def editForm(
     id: Long,
   ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
-    repo
-      .findOne(id)
-      .map {
-        case Some(data) =>
-          Ok(editView(id, form.fill(data)))
-        case None =>
-          NotFound
+    val bookFromId: Future[Option[Book]] = repo.findOne(id)
+    bookFromId.flatMap {
+      case None => Future.successful(NotFound("Wrong ID"))
+      case Some(book) =>
+        val authors: Future[Seq[Author]] = authorRepo.findAll()
+        val genres: Future[Seq[Genre]] = genreRepo.findAll()
+
+        authors.flatMap { authors =>
+          val authorOptions = authors.map(a => (a.id.get.toString, a.name));
+          genres.map { genres =>
+            val genresOptions = genres.map(g => (g.id.get.toString, g.name));
+            Ok(editView(id, form.fill(book), authorOptions, genresOptions))
+          }
+        }
       }
   }
 

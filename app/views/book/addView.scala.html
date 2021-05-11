@@ -1,5 +1,5 @@
 @import models.BookModel.Book
-@(data: Form[Book])(implicit request: MessagesRequestHeader)
+@(data: Form[Book], authors: Seq[(String, String)], genres: Seq[(String, String)])(implicit request: MessagesRequestHeader)
 @main("Books") {
 <div class="container">
 	<h1>Create new book</h1>
@@ -19,8 +19,16 @@
 		<fieldset>
 			@CSRF.formField
 			@inputText(data("title"), Symbol("_label") -> "Title")
-			@inputText(data("author_id"), Symbol("_label") -> "Author ID")
-			@inputText(data("genre_id"), Symbol("_label") -> "Genre ID")
+			@select(data("author_id"),
+				options = authors,
+				Symbol("_label") -> "Author",
+				Symbol("_default") -> "Select author",
+			)
+			@select(data("genre_id"),
+				options = genres,
+				Symbol("_label") -> "Genre",
+				Symbol("_default") -> "Select genre",
+			)
 			@inputText(data("price"), Symbol("_label") -> "Price")
 			@components.buttons("Create book")
 		</fieldset>
