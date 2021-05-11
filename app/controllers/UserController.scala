@@ -84,9 +84,11 @@ class UserController @Inject() (
   }
 
   val form = Form(
-    mapping("id" -> ignored(None: Option[Long]),"login" -> nonEmptyText, "password"->nonEmptyText)(
-      User.apply,
-    )(User.unapply),
+    mapping(
+      "id" -> ignored(None: Option[Long]),
+      "login" -> nonEmptyText,
+      "password" -> nonEmptyText,
+    )(User.apply)(User.unapply),
   )
 
   def listForm(

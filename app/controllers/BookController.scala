@@ -111,7 +111,15 @@ class BookController @Inject() (
     val formValidationResult = form.bindFromRequest()
     formValidationResult.fold(
       { formWithErrors: Form[Book] =>
-        Future.successful(BadRequest(addView(formWithErrors, Seq[(String, String)](), Seq[(String, String)]())))
+        Future.successful(
+          BadRequest(
+            addView(
+              formWithErrors,
+              Seq[(String, String)](),
+              Seq[(String, String)](),
+            ),
+          ),
+        )
       },
       { data: Book =>
         repo
@@ -141,28 +149,32 @@ class BookController @Inject() (
   def updateForm(
     id: Long,
   ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
-    form.bindFromRequest().fold(
-      { formWithErrors: Form[Book] =>
-        val authors: Future[Seq[Author]] = authorRepo.findAll()
-        val genres: Future[Seq[Genre]] = genreRepo.findAll()
+    form
+      .bindFromRequest()
+      .fold(
+        { formWithErrors: Form[Book] =>
+          val authors: Future[Seq[Author]] = authorRepo.findAll()
+          val genres: Future[Seq[Genre]] = genreRepo.findAll()
 
-        authors.flatMap { authors =>
-          val authorOptions = authors.map(a => (a.id.get.toString, a.name));
-          genres.map { genres =>
-            val genresOptions = genres.map(g => (g.id.get.toString, g.name));
-            BadRequest(editView(id, formWithErrors, authorOptions, genresOptions))
+          authors.flatMap { authors =>
+            val authorOptions = authors.map(a => (a.id.get.toString, a.name));
+            genres.map { genres =>
+              val genresOptions = genres.map(g => (g.id.get.toString, g.name));
+              BadRequest(
+                editView(id, formWithErrors, authorOptions, genresOptions),
+              )
+            }
           }
-        }
-      },
-      { data: Book =>
-        repo
-          .update(data.withId(id))
-          .map { _ =>
-            Redirect(routes.BookController.listForm())
-              .flashing("info" -> "Book modified!")
-          }
-      },
-    )
+        },
+        { data: Book =>
+          repo
+            .update(data.withId(id))
+            .map { _ =>
+              Redirect(routes.BookController.listForm())
+                .flashing("info" -> "Book modified!")
+            }
+        },
+      )
   }
 
   def editForm(
@@ -170,7 +182,8 @@ class BookController @Inject() (
   ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
     val bookFromId: Future[Option[Book]] = repo.findOne(id)
     bookFromId.flatMap {
-      case None => Future.successful(NotFound("Wrong ID"))
+      case None =>
+        Future.successful(NotFound("Wrong ID"))
       case Some(book) =>
         val authors: Future[Seq[Author]] = authorRepo.findAll()
         val genres: Future[Seq[Genre]] = genreRepo.findAll()
@@ -182,7 +195,7 @@ class BookController @Inject() (
             Ok(editView(id, form.fill(book), authorOptions, genresOptions))
           }
         }
-      }
+    }
   }
 
   def deleteForm(
