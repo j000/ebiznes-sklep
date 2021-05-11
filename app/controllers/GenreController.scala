@@ -1,15 +1,12 @@
 package controllers
 
 import javax.inject._
-import play.api.mvc.{ Action, AnyContent }
-import play.api.mvc.{ ControllerComponents, InjectedController }
+import play.api.mvc._
 import play.api.libs.json._
-import play.api.mvc.{ MessagesActionBuilder, MessagesRequest, Request, Result }
 import models.GenreModel._
 import scala.concurrent.{ ExecutionContext, Future }
 import play.api.data.Forms._
 import play.api.data.Form
-import scala.util.{ Failure, Success }
 import utils.DBImplicits
 
 @Singleton
@@ -22,6 +19,7 @@ class GenreController @Inject() (
   ec: ExecutionContext,
 ) extends InjectedController {
   import dbExecuter.executeOperation
+  import views.html.genre._
 
   def index() = Action.async {
     repo
@@ -96,7 +94,7 @@ class GenreController @Inject() (
     repo
       .findAll()
       .map { genres =>
-        Ok(views.html.genre.list(genres))
+        Ok(listView(genres))
       }
   }
 
@@ -105,7 +103,7 @@ class GenreController @Inject() (
     val formValidationResult = form.bindFromRequest()
     formValidationResult.fold(
       { formWithErrors: Form[Genre] =>
-        Future(BadRequest(views.html.genre.add(formWithErrors)))
+        Future(BadRequest(addView(formWithErrors)))
       },
       { data: Genre =>
         repo
@@ -120,7 +118,7 @@ class GenreController @Inject() (
 
   def createForm(
   ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
-    Future(Ok(views.html.genre.add(form)))
+    Future(Ok(addView(form)))
   }
 
   def updateForm(
@@ -129,7 +127,7 @@ class GenreController @Inject() (
     val formValidationResult = form.bindFromRequest()
     formValidationResult.fold(
       { formWithErrors: Form[Genre] =>
-        Future(BadRequest(views.html.genre.edit(id, formWithErrors)))
+        Future(BadRequest(editView(id, formWithErrors)))
       },
       { data: Genre =>
         repo
@@ -149,7 +147,7 @@ class GenreController @Inject() (
       .findOne(id)
       .map {
         case Some(data) =>
-          Ok(views.html.genre.edit(id, form.fill(data)))
+          Ok(editView(id, form.fill(data)))
         case None =>
           NotFound
       }

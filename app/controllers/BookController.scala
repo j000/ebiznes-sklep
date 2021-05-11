@@ -1,41 +1,43 @@
 package controllers
 
 import javax.inject._
-import play.api.mvc.{ Action, AnyContent }
-import play.api.mvc.{ ControllerComponents, InjectedController }
+import play.api.mvc._
 import play.api.libs.json._
-import play.api.mvc.Request
 import models.BookModel._
 import scala.concurrent.{ ExecutionContext, Future }
+import play.api.data.Forms._
+import play.api.data.Form
+import utils.DBImplicits
 
 @Singleton
 class BookController @Inject() (
-  val repo: BookRepository,
+  repo: BookRepository,
+  messagesAction: MessagesActionBuilder,
+  dbExecuter: DBImplicits,
 )(
   implicit
   ec: ExecutionContext,
 ) extends InjectedController {
-  type BookDBO = repo.DBO
+  import dbExecuter.executeOperation
+  import views.html.book._
 
   def index() = Action.async {
     repo
-      .index()
+      .findAll()
       .map { books =>
         Ok(Json.toJson(books))
       }
   }
 
-  def create() = Action(parse.json).async { request =>
+  def create() = Action(parse.json).async { implicit request =>
     request
       .body
       .validate[Book]
       .fold(
-        problems => {
-          Future(BadRequest("Invalid json content"))
-        },
+        problems => Future(BadRequest("Invalid json content")),
         input => {
           repo
-            .create(input)
+            .save(input.copy(id = None))
             .map { book =>
               Ok(Json.toJson(book))
             }
@@ -45,7 +47,7 @@ class BookController @Inject() (
 
   def read(id: Long) = Action.async {
     repo
-      .read(id)
+      .findOne(id)
       .map {
         case Some(book) =>
           Ok(Json.toJson(book))
@@ -62,12 +64,9 @@ class BookController @Inject() (
       },
       bookData => {
         repo
-          .update(id, bookData)
-          .map {
-            case None =>
-              NotFound(Json.obj("error" -> "Not Found"))
-            case book =>
-              Ok(Json.toJson(book))
+          .update(bookData.withId(id))
+          .map { book =>
+            Ok(Json.toJson(book))
           }
       },
     )

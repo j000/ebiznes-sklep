@@ -1,15 +1,12 @@
 package controllers
 
 import javax.inject._
-import play.api.mvc.{ Action, AnyContent }
-import play.api.mvc.{ ControllerComponents, InjectedController }
+import play.api.mvc._
 import play.api.libs.json._
-import play.api.mvc.{ MessagesActionBuilder, MessagesRequest, Request, Result }
 import models.AuthorModel._
 import scala.concurrent.{ ExecutionContext, Future }
 import play.api.data.Forms._
 import play.api.data.Form
-import scala.util.{ Failure, Success }
 import utils.DBImplicits
 
 @Singleton
@@ -22,6 +19,7 @@ class AuthorController @Inject() (
   ec: ExecutionContext,
 ) extends InjectedController {
   import dbExecuter.executeOperation
+  import views.html.author._
 
   def index() = Action.async {
     repo
@@ -96,7 +94,7 @@ class AuthorController @Inject() (
     repo
       .findAll()
       .map { authors =>
-        Ok(views.html.author.list(authors))
+        Ok(listView(authors))
       }
   }
 
@@ -105,7 +103,7 @@ class AuthorController @Inject() (
     val formValidationResult = form.bindFromRequest()
     formValidationResult.fold(
       { formWithErrors: Form[Author] =>
-        Future(BadRequest(views.html.author.add(formWithErrors)))
+        Future(BadRequest(addView(formWithErrors)))
       },
       { data: Author =>
         repo
@@ -120,7 +118,7 @@ class AuthorController @Inject() (
 
   def createForm(
   ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
-    Future(Ok(views.html.author.add(form)))
+    Future(Ok(addView(form)))
   }
 
   def updateForm(
@@ -129,7 +127,7 @@ class AuthorController @Inject() (
     val formValidationResult = form.bindFromRequest()
     formValidationResult.fold(
       { formWithErrors: Form[Author] =>
-        Future(BadRequest(views.html.author.edit(id, formWithErrors)))
+        Future(BadRequest(editView(id, formWithErrors)))
       },
       { data: Author =>
         repo
@@ -149,7 +147,7 @@ class AuthorController @Inject() (
       .findOne(id)
       .map {
         case Some(data) =>
-          Ok(views.html.author.edit(id, form.fill(data)))
+          Ok(editView(id, form.fill(data)))
         case None =>
           NotFound
       }
