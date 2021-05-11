@@ -1,0 +1,29 @@
+@import models.CollectionModel.Collection
+@(id: Long, data: Form[Collection])(implicit request: MessagesRequestHeader)
+@main("Collections") {
+<div class="container">
+	<h1>Edit collection @id</h1>
+	@* Flash shows updates to a page *@
+	@request.flash.data.map{ case (name, value) =>
+		<div>@name: @value</div>
+	}
+	@* Global errors are not tied to any particular form field *@
+	@if(data.hasGlobalErrors) {
+		@data.globalErrors.map { error: FormError =>
+			<div>
+				@error.key: @error.message
+			</div>
+		}
+	}
+	@form(routes.CollectionController.updateForm(id)) {
+		<fieldset>
+			@CSRF.formField
+			@helpers.inputHidden(data("id"))
+			@inputText(data("name"), Symbol("_label") -> "Name")
+			@components.buttons("Update collection")
+		</fieldset>
+	}
+	@delete(routes.CollectionController.deleteForm(id))
+	<a class="button" href="@routes.CollectionController.listForm()">Back</a>
+</div>
+}

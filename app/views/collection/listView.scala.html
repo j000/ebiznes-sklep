@@ -1,0 +1,34 @@
+@import models.CollectionModel.Collection
+@(collections: Seq[Collection])(implicit request: MessagesRequestHeader)
+@main("Collections") {
+<div class="container">
+	<h1>Collections</h1>
+	@* Flash shows updates to a page *@
+	@request.flash.data.map{ case (name, value) =>
+		<div>@name: @value</div>
+	}
+	<table class="with-buttons">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>Name</th>
+				<th></th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@collections.map { a =>
+				<tr>
+					<td>@a.id</td>
+					<td>@a.name</td>
+					<td><a class="button" href="@routes.CollectionController.editForm(a.id.get)">Edit</a></td>
+					<td>
+						@delete(routes.CollectionController.deleteForm(a.id.get))
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+	<a class="button" href="@routes.CollectionController.createForm()">New</a>
+</div>
+}

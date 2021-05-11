@@ -1,96 +1,84 @@
 package models.CollectionModel
 
-import scala.language.postfixOps
-import models.SlickProfile.api._
-import models.CRUDRepository
-import slick.additions.entity._
-import scala.concurrent.{ ExecutionContext, Future }
-import javax.inject.{ Inject, Singleton }
-import play.api.db.slick.{ DatabaseConfigProvider, HasDatabaseConfig }
-import slick.jdbc.JdbcProfile
+import com.byteslounge.slickrepo.meta.{ Entity, Keyed }
 import play.api.libs.json._
-import play.api.libs.functional.syntax._
+import models.BookModel.Book
 
-case class Collection(name: String)
-case class Collection_helper(collection: Long, book: Long)
+case class Collection(override val id: Option[Long], name: String, books: Seq[Book] = Seq.empty)
+  extends Entity[Collection, Long] {
+  def withId(id: Long): Collection = this.copy(id = Some(id))
 
-object Collections extends EntityTableModule[Long, Collection]("Collections") {
-
-  class Row(tag: Tag) extends BaseEntRow(tag) with AutoNameSnakify {
-    def name = column[String]("name")
-    def mapping = (name).mapTo[Collection]
-  }
-
+  def loadBooks(books: Seq[Book]): Collection = this.copy(books=books)
 }
 
-object Collections_helper
-  extends EntityTableModule[Long, Collection_helper]("Collections_helper") {
+object Collection {
+  implicit val _collection = Json.format[Collection]
+}
 
-  class Row(tag: Tag) extends BaseEntRow(tag) with AutoNameSnakify {
-    def collection = column[Long]("collection_id")
-    def book = column[Long]("book_id")
-    def mapping = (collection, book).mapTo[Collection_helper]
+case class CollectionHelper(override val id: Option[Long], book_id: Long, collection_id: Long)
+  extends Entity[CollectionHelper, Long] {
+  def withId(id: Long): CollectionHelper = this.copy(id = Some(id))
+}
+
+import com.byteslounge.slickrepo.meta.Keyed
+import com.byteslounge.slickrepo.repository.Repository
+import javax.inject._
+import play.api.db.slick.DatabaseConfigProvider
+import slick.ast.BaseTypedType
+import slick.jdbc.JdbcProfile
+import scala.concurrent.Future
+
+@Singleton
+class CollectionRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)
+  extends Repository[Collection, Long] {
+
+  val driver = dbConfigProvider.get[JdbcProfile].profile
+  import driver.api._
+  val pkType = implicitly[BaseTypedType[Long]]
+  val tableQuery = TableQuery[Collections]
+  type TableType = Collections
+
+  class Collections(tag: slick.lifted.Tag)
+    extends Table[Collection](tag, "Collections")
+    with Keyed[Long] {
+    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
+    def name = column[String]("name")
+    def * = (id.?, name) <> (
+      { case (id, name) => Collection(id, name) },
+      {(_: Collection) match { case Collection(id, name, _) => Some(id, name) }}
+    )
+      // ((Collection.apply _).tupled, Collection.unapply)
+  }
+
+  def delete(id: Long): DBIO[Int] = {
+    findOneCompiled(id).delete
   }
 
 }
 
 @Singleton
-class CollectionRepository @Inject() (
-  dbConfigProvider: DatabaseConfigProvider,
-)(
-  implicit
-  ec: ExecutionContext,
-) extends CRUDRepository[Collection](Collections, dbConfigProvider) {
+class CollectionHelperRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)
+  extends Repository[CollectionHelper, Long] {
 
-  def update(id: Long, data: Collection): Future[Option[DBO]] =
-    db run {
-      Collections.Q.filter(_.key === id).map(_.mapping) update
-        (data) map {
-          case 0 =>
-            None
-          case _ =>
-            Some(SavedEntity[Long, Collection](id, data))
-        }
-    }
+  val driver = dbConfigProvider.get[JdbcProfile].profile
+  import driver.api._
+  val pkType = implicitly[BaseTypedType[Long]]
+  type TableType = CollectionHelpers
+  val tableQuery = TableQuery[TableType]
 
-}
+  class CollectionHelpers(tag: slick.lifted.Tag)
+    extends Table[CollectionHelper](tag, "Collections")
+    with Keyed[Long] {
+    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
+    def collection_id = column[Long]("collection_id")
+    def book_id = column[Long]("book_id")
+    def * = (id.?, collection_id, book_id) <> ((CollectionHelper.apply _).tupled, CollectionHelper.unapply)
 
-object Collection extends ((String) => Collection) {
-  implicit val _collection = Json.format[Collection]
+    // def book = foreignKey("book_fk", book_id, BookRepository.TableType)(_.id)
+  }
 
-  implicit val _writes: Writes[KeyedEntity[Long, Collection]] =
-    ((JsPath \ "id").write[Long] and (JsPath).write[Collection])(
-      unlift(KeyedEntity.unapply[Long, Collection]),
-    )
-
-  implicit val _reads: Reads[KeyedEntity[Long, Collection]] =
-    ((JsPath \ "id").read[Long] and (JsPath).read[Collection])(
-      KeyedEntity.apply[Long, Collection] _,
-    )
-
-  implicit val _format: Format[KeyedEntity[Long, Collection]] = Format(
-    _reads,
-    _writes,
-  )
-
-}
-
-object Collection_helper extends ((Long, Long) => Collection_helper) {
-  implicit val _collection = Json.format[Collection_helper]
-
-  implicit val _writes: Writes[KeyedEntity[Long, Collection_helper]] =
-    ((JsPath \ "id").write[Long] and (JsPath).write[Collection_helper])(
-      unlift(KeyedEntity.unapply[Long, Collection_helper]),
-    )
-
-  implicit val _reads: Reads[KeyedEntity[Long, Collection_helper]] =
-    ((JsPath \ "id").read[Long] and (JsPath).read[Collection_helper])(
-      KeyedEntity.apply[Long, Collection_helper] _,
-    )
-
-  implicit val _format: Format[KeyedEntity[Long, Collection_helper]] = Format(
-    _reads,
-    _writes,
-  )
+  def delete(id: Long): DBIO[Int] = {
+    findOneCompiled(id).delete
+  }
 
 }
