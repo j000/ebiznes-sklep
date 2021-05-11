@@ -11,6 +11,8 @@ $black: #111;
 $red: #ca604d;
 $red: #ca4d5e;
 
+$color-primary: #8A15BB;
+
 @mixin desktop {
 	@media screen and (min-width: 40rem) {
 		@content;
@@ -44,7 +46,7 @@ body {
 
 // main
 body {
-	font-family: 'Josefin Sans', 'Lato', 'Roboto', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+	font-family: 'Overpass', 'Josefin Sans', 'Lato', 'Roboto', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
 	// font-size: 16px;
 
 	min-height: 100vh;
