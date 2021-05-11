@@ -1,0 +1,28 @@
+@import models.UserModel.User
+@(data: Form[User])(implicit request: MessagesRequestHeader)
+@main("Users") {
+<div class="container">
+	<h1>Create new user</h1>
+	@* Flash shows updates to a page *@
+	@request.flash.data.map{ case (name, value) =>
+		<div>@name: @value</div>
+	}
+	@* Global errors are not tied to any particular form field *@
+	@if(data.hasGlobalErrors) {
+		@data.globalErrors.map { error: FormError =>
+			<div>
+				@error.key: @error.message
+			</div>
+		}
+	}
+	@form(routes.UserController.saveForm()) {
+		<fieldset>
+			@CSRF.formField
+			@inputText(data("login"), Symbol("_label") -> "Login")
+			@inputText(data("password"), Symbol("_label") -> "Password")
+			@components.buttons("Create user")
+		</fieldset>
+	}
+	<a class="button" href="@routes.UserController.listForm()">Back</a>
+</div>
+}

@@ -79,4 +79,11 @@ POST   /book/$id<[1-9][0-9]*>           controllers.BookController.updateForm(id
 GET    /book/$id<[1-9][0-9]*>           controllers.BookController.editForm(id: Long)
 POST   /book/$id<[1-9][0-9]*>/delete    controllers.BookController.deleteForm(id: Long)
 
+GET    /user                            controllers.UserController.listForm()
+POST   /user/new                        controllers.UserController.saveForm()
+GET    /user/new                        controllers.UserController.createForm()
+POST   /user/$id<[1-9][0-9]*>           controllers.UserController.updateForm(id: Long)
+GET    /user/$id<[1-9][0-9]*>           controllers.UserController.editForm(id: Long)
+POST   /user/$id<[1-9][0-9]*>/delete    controllers.UserController.deleteForm(id: Long)
+
 GET    /*file                           controllers.Assets.at(path="/public", file)

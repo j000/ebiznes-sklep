@@ -1,41 +1,43 @@
 package controllers
 
 import javax.inject._
-import play.api.mvc.{ Action, AnyContent }
-import play.api.mvc.{ ControllerComponents, InjectedController }
+import play.api.mvc._
 import play.api.libs.json._
-import play.api.mvc.Request
 import models.UserModel._
 import scala.concurrent.{ ExecutionContext, Future }
+import play.api.data.Forms._
+import play.api.data.Form
+import utils.DBImplicits
 
 @Singleton
 class UserController @Inject() (
-  val repo: UserRepository,
+  repo: UserRepository,
+  messagesAction: MessagesActionBuilder,
+  dbExecuter: DBImplicits,
 )(
   implicit
   ec: ExecutionContext,
 ) extends InjectedController {
-  type UserDBO = repo.DBO
+  import dbExecuter.executeOperation
+  import views.html.user._
 
   def index() = Action.async {
     repo
-      .index()
+      .findAll()
       .map { users =>
         Ok(Json.toJson(users))
       }
   }
 
-  def create() = Action(parse.json).async { request =>
+  def create() = Action(parse.json).async { implicit request =>
     request
       .body
       .validate[User]
       .fold(
-        problems => {
-          Future(BadRequest("Invalid json content"))
-        },
+        problems => Future(BadRequest("Invalid json content")),
         input => {
           repo
-            .create(input)
+            .save(input.copy(id = None))
             .map { user =>
               Ok(Json.toJson(user))
             }
@@ -45,7 +47,7 @@ class UserController @Inject() (
 
   def read(id: Long) = Action.async {
     repo
-      .read(id)
+      .findOne(id)
       .map {
         case Some(user) =>
           Ok(Json.toJson(user))
@@ -62,12 +64,9 @@ class UserController @Inject() (
       },
       userData => {
         repo
-          .update(id, userData)
-          .map {
-            case None =>
-              NotFound(Json.obj("error" -> "Not Found"))
-            case user =>
-              Ok(Json.toJson(user))
+          .update(userData.withId(id))
+          .map { user =>
+            Ok(Json.toJson(user))
           }
       },
     )
@@ -81,6 +80,87 @@ class UserController @Inject() (
           NotFound(Json.obj("error" -> "Not Found"))
         case _ =>
           Ok(s"user $id deleted")
+      }
+  }
+
+  val form = Form(
+    mapping("id" -> ignored(None: Option[Long]),"login" -> nonEmptyText, "password"->nonEmptyText)(
+      User.apply,
+    )(User.unapply),
+  )
+
+  def listForm(
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    repo
+      .findAll()
+      .map { users =>
+        Ok(listView(users))
+      }
+  }
+
+  def saveForm(
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    val formValidationResult = form.bindFromRequest()
+    formValidationResult.fold(
+      { formWithErrors: Form[User] =>
+        Future(BadRequest(addView(formWithErrors)))
+      },
+      { data: User =>
+        repo
+          .save(data.copy(id = None))
+          .map { _ =>
+            Redirect(routes.UserController.listForm())
+              .flashing("info" -> "User added!")
+          }
+      },
+    )
+  }
+
+  def createForm(
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    Future(Ok(addView(form)))
+  }
+
+  def updateForm(
+    id: Long,
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    val formValidationResult = form.bindFromRequest()
+    formValidationResult.fold(
+      { formWithErrors: Form[User] =>
+        Future(BadRequest(editView(id, formWithErrors)))
+      },
+      { data: User =>
+        repo
+          .update(data.withId(id))
+          .map { _ =>
+            Redirect(routes.UserController.listForm())
+              .flashing("info" -> "User modified!")
+          }
+      },
+    )
+  }
+
+  def editForm(
+    id: Long,
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    repo
+      .findOne(id)
+      .map {
+        case Some(data) =>
+          Ok(editView(id, form.fill(data)))
+        case None =>
+          NotFound
+      }
+  }
+
+  def deleteForm(
+    id: Long,
+  ) = Action.async {
+    repo
+      .delete(id)
+      .map { _ =>
+        Redirect(routes.UserController.listForm())
+          .flashing("info" -> "User deleted!")
       }
   }
 

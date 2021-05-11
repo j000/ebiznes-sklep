@@ -1,0 +1,36 @@
+@import models.UserModel.User
+@(users: Seq[User])(implicit request: MessagesRequestHeader)
+@main("Users") {
+<div class="container">
+	<h1>Users</h1>
+	@* Flash shows updates to a page *@
+	@request.flash.data.map{ case (name, value) =>
+		<div>@name: @value</div>
+	}
+	<table class="with-buttons">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>Login</th>
+				<th>Password</th>
+				<th></th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@users.map { a =>
+				<tr>
+					<td>@a.id</td>
+					<td>@a.login</td>
+					<td>@a.password</td>
+					<td><a class="button" href="@routes.UserController.editForm(a.id.get)">Edit</a></td>
+					<td>
+						@delete(routes.UserController.deleteForm(a.id.get))
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+	<a class="button" href="@routes.UserController.createForm()">New</a>
+</div>
+}

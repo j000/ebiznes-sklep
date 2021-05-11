@@ -1,65 +1,45 @@
 package models.UserModel
 
-import scala.language.postfixOps
-import models.SlickProfile.api._
-import models.CRUDRepository
-import slick.additions.entity._
-import scala.concurrent.{ ExecutionContext, Future }
-import javax.inject.{ Inject, Singleton }
-import play.api.db.slick.{ DatabaseConfigProvider, HasDatabaseConfig }
-import slick.jdbc.JdbcProfile
+import com.byteslounge.slickrepo.meta.{ Entity, Keyed }
 import play.api.libs.json._
-import play.api.libs.functional.syntax._
 
-case class User(login: String, password: String)
+case class User(override val id: Option[Long], login: String, password: String)
+  extends Entity[User, Long] {
+  def withId(id: Long): User = this.copy(id = Some(id))
+}
 
-object Users extends EntityTableModule[Long, User]("Users") {
+object User {
+  implicit val _user = Json.format[User]
+}
 
-  class Row(tag: Tag) extends BaseEntRow(tag) with AutoNameSnakify {
-    val login = col[String]
-    val password = col[String]
-    def mapping = (login, password).mapTo[User]
+import com.byteslounge.slickrepo.meta.Keyed
+import com.byteslounge.slickrepo.repository.Repository
+import com.google.inject.Inject
+import play.api.db.slick.DatabaseConfigProvider
+import slick.ast.BaseTypedType
+import slick.jdbc.JdbcProfile
+import scala.concurrent.Future
+
+class UserRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)
+  extends Repository[User, Long] {
+
+  val driver = dbConfigProvider.get[JdbcProfile].profile
+  import driver.api._
+  val pkType = implicitly[BaseTypedType[Long]]
+  val tableQuery = TableQuery[Users]
+  type TableType = Users
+
+  class Users(tag: slick.lifted.Tag)
+    extends Table[User](tag, "Users")
+    with Keyed[Long] {
+    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
+    def login = column[String]("login")
+    def password = column[String]("password")
+    def * = (id.?, login, password) <> ((User.apply _).tupled, User.unapply)
   }
 
-}
-
-@Singleton
-class UserRepository @Inject() (
-  dbConfigProvider: DatabaseConfigProvider,
-)(
-  implicit
-  ec: ExecutionContext,
-) extends CRUDRepository[User](Users, dbConfigProvider) {
-
-  def update(id: Long, data: User): Future[Option[DBO]] =
-    db run {
-      Users.Q.filter(_.key === id).map(_.mapping) update
-        (data) map {
-          case 0 =>
-            None
-          case _ =>
-            Some(SavedEntity[Long, User](id, data))
-        }
-    }
-
-}
-
-object User extends ((String, String) => User) {
-  implicit val _user = Json.format[User]
-
-  implicit val _writes: Writes[KeyedEntity[Long, User]] =
-    ((JsPath \ "id").write[Long] and (JsPath).write[User])(
-      unlift(KeyedEntity.unapply[Long, User]),
-    )
-
-  implicit val _reads: Reads[KeyedEntity[Long, User]] =
-    ((JsPath \ "id").read[Long] and (JsPath).read[User])(
-      KeyedEntity.apply[Long, User] _,
-    )
-
-  implicit val _format: Format[KeyedEntity[Long, User]] = Format(
-    _reads,
-    _writes,
-  )
+  def delete(id: Long): DBIO[Int] = {
+    findOneCompiled(id).delete
+  }
 
 }
