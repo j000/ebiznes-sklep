@@ -1,0 +1,32 @@
+@import models.BookModel.Book
+@(id: Long, data: Form[Book])(implicit request: MessagesRequestHeader)
+@main("Books") {
+<div class="container">
+	<h1>Edit book @id</h1>
+	@* Flash shows updates to a page *@
+	@request.flash.data.map{ case (name, value) =>
+		<div>@name: @value</div>
+	}
+	@* Global errors are not tied to any particular form field *@
+	@if(data.hasGlobalErrors) {
+		@data.globalErrors.map { error: FormError =>
+			<div>
+				@error.key: @error.message
+			</div>
+		}
+	}
+	@form(routes.BookController.updateForm(id)) {
+		<fieldset>
+			@CSRF.formField
+			@helpers.inputHidden(data("id"))
+			@inputText(data("title"), Symbol("_label") -> "Title")
+			@inputText(data("author_id"), Symbol("_label") -> "Author ID")
+			@inputText(data("genre_id"), Symbol("_label") -> "Genre ID")
+			@inputText(data("price"), Symbol("_label") -> "Price")
+			@components.buttons("Update book")
+		</fieldset>
+	}
+	@delete(routes.BookController.deleteForm(id))
+	<a class="button" href="@routes.BookController.listForm()">Back</a>
+</div>
+}

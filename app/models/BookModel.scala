@@ -1,67 +1,56 @@
 package models.BookModel
 
-import scala.language.postfixOps
-import models.SlickProfile.api._
-import models.CRUDRepository
-import slick.additions.entity._
-import scala.concurrent.{ ExecutionContext, Future }
-import javax.inject.{ Inject, Singleton }
-import play.api.db.slick.{ DatabaseConfigProvider, HasDatabaseConfig }
-import slick.jdbc.JdbcProfile
+import com.byteslounge.slickrepo.meta.{ Entity, Keyed }
 import play.api.libs.json._
-import play.api.libs.functional.syntax._
 
-case class Book(title: String, author_id: Long, genre_id: Long, price: Long)
+case class Book(
+  override val id: Option[Long],
+  title: String,
+  author_id: Long,
+  genre_id: Long,
+  price: Long,
+) extends Entity[Book, Long] {
+  def withId(id: Long): Book = this.copy(id = Some(id))
+}
 
-object Books extends EntityTableModule[Long, Book]("Books") {
+object Book {
+  implicit val _book = Json.format[Book]
+}
 
-  class Row(tag: Tag) extends BaseEntRow(tag) with AutoNameSnakify {
+import com.byteslounge.slickrepo.meta.Keyed
+import com.byteslounge.slickrepo.repository.Repository
+import com.google.inject.Inject
+import play.api.db.slick.DatabaseConfigProvider
+import slick.ast.BaseTypedType
+import slick.jdbc.JdbcProfile
+import scala.concurrent.Future
+
+class BookRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)
+  extends Repository[Book, Long] {
+
+  val driver = dbConfigProvider.get[JdbcProfile].profile
+  import driver.api._
+  val pkType = implicitly[BaseTypedType[Long]]
+  val tableQuery = TableQuery[Books]
+  type TableType = Books
+
+  class Books(tag: slick.lifted.Tag)
+    extends Table[Book](tag, "Books")
+    with Keyed[Long] {
+    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def title = column[String]("title")
     def author_id = column[Long]("author_id")
     def genre_id = column[Long]("genre_id")
     def price = column[Long]("price")
-    def mapping = (title, author_id, genre_id, price).mapTo[Book]
+
+    def * =
+      (id.?, title, author_id, genre_id, price) <>
+        ((Book.apply _).tupled, Book.unapply)
+
   }
 
-}
-
-@Singleton
-class BookRepository @Inject() (
-  dbConfigProvider: DatabaseConfigProvider,
-)(
-  implicit
-  ec: ExecutionContext,
-) extends CRUDRepository[Book](Books, dbConfigProvider) {
-
-  def update(id: Long, data: Book): Future[Option[DBO]] =
-    db run {
-      Books.Q.filter(_.key === id).map(_.mapping) update
-        (data) map {
-          case 0 =>
-            None
-          case _ =>
-            Some(SavedEntity[Long, Book](id, data))
-        }
-    }
-
-}
-
-object Book extends ((String, Long, Long, Long) => Book) {
-  implicit val _book = Json.format[Book]
-
-  implicit val _writes: Writes[KeyedEntity[Long, Book]] =
-    ((JsPath \ "id").write[Long] and (JsPath).write[Book])(
-      unlift(KeyedEntity.unapply[Long, Book]),
-    )
-
-  implicit val _reads: Reads[KeyedEntity[Long, Book]] =
-    ((JsPath \ "id").read[Long] and (JsPath).read[Book])(
-      KeyedEntity.apply[Long, Book] _,
-    )
-
-  implicit val _format: Format[KeyedEntity[Long, Book]] = Format(
-    _reads,
-    _writes,
-  )
+  def delete(id: Long): DBIO[Int] = {
+    findOneCompiled(id).delete
+  }
 
 }

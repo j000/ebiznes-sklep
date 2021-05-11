@@ -83,4 +83,89 @@ class BookController @Inject() (
       }
   }
 
+  val form = Form(
+    mapping(
+      "id" -> ignored(None: Option[Long]),
+      "title" -> nonEmptyText,
+      "author_id" -> longNumber,
+      "genre_id" -> longNumber,
+      "price" -> longNumber,
+    )(Book.apply)(Book.unapply),
+  )
+
+  def listForm(
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    repo
+      .findAll()
+      .map { books =>
+        Ok(listView(books))
+      }
+  }
+
+  def saveForm(
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    val formValidationResult = form.bindFromRequest()
+    formValidationResult.fold(
+      { formWithErrors: Form[Book] =>
+        Future(BadRequest(addView(formWithErrors)))
+      },
+      { data: Book =>
+        repo
+          .save(data.copy(id = None))
+          .map { _ =>
+            Redirect(routes.BookController.listForm())
+              .flashing("info" -> "Book added!")
+          }
+      },
+    )
+  }
+
+  def createForm(
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    Future(Ok(addView(form)))
+  }
+
+  def updateForm(
+    id: Long,
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    val formValidationResult = form.bindFromRequest()
+    formValidationResult.fold(
+      { formWithErrors: Form[Book] =>
+        Future(BadRequest(editView(id, formWithErrors)))
+      },
+      { data: Book =>
+        repo
+          .update(data.withId(id))
+          .map { _ =>
+            Redirect(routes.BookController.listForm())
+              .flashing("info" -> "Book modified!")
+          }
+      },
+    )
+  }
+
+  def editForm(
+    id: Long,
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    repo
+      .findOne(id)
+      .map {
+        case Some(data) =>
+          Ok(editView(id, form.fill(data)))
+        case None =>
+          NotFound
+      }
+  }
+
+  def deleteForm(
+    id: Long,
+  ) = Action.async {
+    repo
+      .delete(id)
+      .map { _ =>
+        Redirect(routes.BookController.listForm())
+          .flashing("info" -> "Book deleted!")
+      }
+  }
+
 }
