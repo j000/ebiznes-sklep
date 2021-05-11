@@ -14,12 +14,13 @@ object Author {
 
 import com.byteslounge.slickrepo.meta.Keyed
 import com.byteslounge.slickrepo.repository.Repository
-import com.google.inject.Inject
+import javax.inject.{ Inject, Singleton }
 import play.api.db.slick.DatabaseConfigProvider
 import slick.ast.BaseTypedType
 import slick.jdbc.JdbcProfile
 import scala.concurrent.Future
 
+@Singleton
 class AuthorRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)
   extends Repository[Author, Long] {
 

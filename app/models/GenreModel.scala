@@ -14,7 +14,7 @@ object Genre {
 
 import com.byteslounge.slickrepo.meta.Keyed
 import com.byteslounge.slickrepo.repository.Repository
-import com.google.inject.Inject
+import javax.inject._
 import play.api.db.slick.DatabaseConfigProvider
 import slick.ast.BaseTypedType
 import slick.jdbc.JdbcProfile

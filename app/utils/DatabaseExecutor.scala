@@ -1,6 +1,6 @@
 package utils
 
-import com.google.inject.Inject
+import javax.inject._
 import play.api.db.slick.DatabaseConfigProvider
 import slick.dbio.DBIO
 import slick.jdbc.JdbcProfile

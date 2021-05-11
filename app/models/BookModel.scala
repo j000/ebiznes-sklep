@@ -19,12 +19,13 @@ object Book {
 
 import com.byteslounge.slickrepo.meta.Keyed
 import com.byteslounge.slickrepo.repository.Repository
-import com.google.inject.Inject
+import javax.inject._
 import play.api.db.slick.DatabaseConfigProvider
 import slick.ast.BaseTypedType
 import slick.jdbc.JdbcProfile
 import scala.concurrent.Future
 
+@Singleton
 class BookRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)
   extends Repository[Book, Long] {
 
