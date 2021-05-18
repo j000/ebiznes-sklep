@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import { useRouteMatch, useParams, useHistory } from "react-router";
 import { Switch, Route, Link } from 'react-router-dom';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
@@ -8,20 +8,24 @@ import { getRequest } from '~/src/utils.jsx';
 
 const baseUrl = 'http://localhost:9000/api/review';
 
+const baseTitle = 'Reviews';
+const editTitle = 'Edit review';
+
 const properties = {
 	content: 'Review',
 	user_id: 'User ID',
-	book_id: 'BookId',
+	book_id: 'Book ID',
 };
 
-const propertiesState = {
-	content: '',
-	user_id: '',
-	book_id: '',
+const propertiesTypes = {
+	user_id: 'number',
+	book_id: 'number',
 };
 
-const baseTitle = 'Reviews';
-const editTitle = 'Edit review';
+const propertiesState = {};
+Object.keys(properties).map((key) => {
+	propertiesState[key] = '';
+});
 
 ////////////////////////////////////////
 
@@ -113,17 +117,13 @@ const EditForm = (props) => {
 				{({ isSubmitting }) => (
 					<Form>
 						<fieldset disabled={isSubmitting}>
-							<label htmlFor="content">Review</label>
-							<Field id="content" name="content" type="text" />
-							<ErrorMessage name="content" />
-
-							<label htmlFor="user_id">User ID</label>
-							<Field id="user_id" name="user_id" type="number" />
-							<ErrorMessage name="user_id" />
-
-							<label htmlFor="book_id">Book ID</label>
-							<Field id="book_id" name="book_id" type="number" />
-							<ErrorMessage name="book_id" />
+							{ Object.entries(properties).map(([key, value]) => (
+								<Fragment key={key}>
+									<label htmlFor={key}>{value}</label>
+									<Field id={key} name={key} type={propertiesTypes[key] || 'text'} />
+									<ErrorMessage name={key} />
+								</Fragment>
+							))}
 
 							<div className="right">
 								<button type="submit">Submit</button>
