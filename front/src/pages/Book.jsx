@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import { useRouteMatch, useParams, useHistory } from "react-router";
 import { Switch, Route, Link } from 'react-router-dom';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
@@ -8,6 +8,9 @@ import { getRequest } from '~/src/utils.jsx';
 
 const baseUrl = 'http://localhost:9000/api/book';
 
+const baseTitle = 'Books';
+const editTitle = 'Edit book';
+
 const properties = {
 	title: 'Title',
 	author_id: 'Author ID',
@@ -15,15 +18,16 @@ const properties = {
 	price: 'Price',
 };
 
-const propertiesState = {
-	title: '',
-	author_id: '',
-	genre_id: '',
-	price: '',
+const propertiesTypes = {
+	author_id: 'number',
+	genre_id: 'number',
+	price: 'number',
 };
 
-const baseTitle = 'Books';
-const editTitle = 'Edit book';
+const propertiesState = {};
+Object.keys(properties).map((key) => {
+	propertiesState[key] = '';
+});
 
 ////////////////////////////////////////
 
@@ -115,21 +119,13 @@ const EditForm = (props) => {
 				{({ isSubmitting }) => (
 					<Form>
 						<fieldset disabled={isSubmitting}>
-							<label htmlFor="title">Title</label>
-							<Field id="title" name="title" type="text" />
-							<ErrorMessage name="title" />
-
-							<label htmlFor="author_id">AuthorId</label>
-							<Field id="author_id" name="author_id" type="number" />
-							<ErrorMessage name="author_id" />
-
-							<label htmlFor="genre_id">GenreId</label>
-							<Field id="genre_id" name="genre_id" type="number" />
-							<ErrorMessage name="genre_id" />
-
-							<label htmlFor="price">Price</label>
-							<Field id="price" name="price" type="number" />
-							<ErrorMessage name="price" />
+							{ Object.entries(properties).map(([key, value]) => (
+								<Fragment key={key}>
+									<label htmlFor={key}>{value}</label>
+									<Field id={key} name={key} type={propertiesTypes[key] || 'text'} />
+									<ErrorMessage name={key} />
+								</Fragment>
+							))}
 
 							<div className="right">
 								<button type="submit">Submit</button>

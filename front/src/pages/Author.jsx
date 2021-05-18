@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import { useRouteMatch, useParams, useHistory } from "react-router";
 import { Switch, Route, Link } from 'react-router-dom';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
@@ -8,16 +8,19 @@ import { getRequest } from '~/src/utils.jsx';
 
 const baseUrl = 'http://localhost:9000/api/author';
 
+const baseTitle = 'Author';
+const editTitle = 'Edit author';
+
 const properties = {
 	name: 'Name',
 };
 
-const propertiesState = {
-	name: '',
-};
+const propertiesTypes = {};
 
-const baseTitle = 'Author';
-const editTitle = 'Edit author';
+const propertiesState = {};
+Object.keys(properties).map((key) => {
+	propertiesState[key] = '';
+});
 
 ////////////////////////////////////////
 
@@ -109,9 +112,13 @@ const EditForm = (props) => {
 				{({ isSubmitting }) => (
 					<Form>
 						<fieldset disabled={isSubmitting}>
-							<label htmlFor="name">Name</label>
-							<Field id="name" name="name" type="text" />
-							<ErrorMessage name="name" />
+							{ Object.entries(properties).map(([key, value]) => (
+								<Fragment key={key}>
+									<label htmlFor={key}>{value}</label>
+									<Field id={key} name={key} type={propertiesTypes[key] || 'text'} />
+									<ErrorMessage name={key} />
+								</Fragment>
+							))}
 
 							<div className="right">
 								<button type="submit">Submit</button>
