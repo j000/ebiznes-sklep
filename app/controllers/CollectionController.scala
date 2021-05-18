@@ -85,8 +85,8 @@ class CollectionController @Inject() (
 
   val form = Form(
     mapping("id" -> ignored(None: Option[Long]), "name" -> nonEmptyText)(
-      (id, name) => Collection(id, name)
-    )((_: Collection) match { case Collection(id, name, _) => Some((id, name))})
+      Collection.apply,
+    )(Collection.unapply),
   )
 
   def listForm(

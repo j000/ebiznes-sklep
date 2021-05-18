@@ -8,6 +8,7 @@ const links = {
 	'/user': 'Users',
 	'/review': 'Reviews',
 	'/basket': 'Baskets',
+	'/collection': 'Collections',
 };
 
 export default (props) => {

@@ -107,4 +107,11 @@ POST   /basket/$id<[1-9][0-9]*>            controllers.BasketController.updateFo
 GET    /basket/$id<[1-9][0-9]*>            controllers.BasketController.editForm(id: Long)
 POST   /basket/$id<[1-9][0-9]*>/delete     controllers.BasketController.deleteForm(id: Long)
 
+GET    /collection                         controllers.CollectionController.listForm()
+POST   /collection/new                     controllers.CollectionController.saveForm()
+GET    /collection/new                     controllers.CollectionController.createForm()
+POST   /collection/$id<[1-9][0-9]*>        controllers.CollectionController.updateForm(id: Long)
+GET    /collection/$id<[1-9][0-9]*>        controllers.CollectionController.editForm(id: Long)
+POST   /collection/$id<[1-9][0-9]*>/delete controllers.CollectionController.deleteForm(id: Long)
+
 GET    /*file                              controllers.Assets.at(path="/public", file)
