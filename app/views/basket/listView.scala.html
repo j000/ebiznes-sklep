@@ -1,0 +1,38 @@
+@import models.BasketModel.Basket
+@(baskets: Seq[Basket])(implicit request: MessagesRequestHeader)
+@main("Baskets") {
+<div class="container">
+	<h1>Baskets</h1>
+	@* Flash shows updates to a page *@
+	@request.flash.data.map{ case (name, value) =>
+		<div>@name: @value</div>
+	}
+	<table class="with-buttons">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>User ID</th>
+				<th>Book ID</th>
+				<th>Count</th>
+				<th></th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@baskets.map { a =>
+				<tr>
+					<td>@a.id</td>
+					<td>@a.user_id</td>
+					<td>@a.book_id</td>
+					<td>@a.count</td>
+					<td><a class="button" href="@routes.BasketController.editForm(a.id.get)">Edit</a></td>
+					<td>
+						@delete(routes.BasketController.deleteForm(a.id.get))
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+	<a class="button" href="@routes.BasketController.createForm()">New</a>
+</div>
+}

@@ -100,4 +100,11 @@ POST   /review/$id<[1-9][0-9]*>            controllers.ReviewController.updateFo
 GET    /review/$id<[1-9][0-9]*>            controllers.ReviewController.editForm(id: Long)
 POST   /review/$id<[1-9][0-9]*>/delete     controllers.ReviewController.deleteForm(id: Long)
 
+GET    /basket                             controllers.BasketController.listForm()
+POST   /basket/new                         controllers.BasketController.saveForm()
+GET    /basket/new                         controllers.BasketController.createForm()
+POST   /basket/$id<[1-9][0-9]*>            controllers.BasketController.updateForm(id: Long)
+GET    /basket/$id<[1-9][0-9]*>            controllers.BasketController.editForm(id: Long)
+POST   /basket/$id<[1-9][0-9]*>/delete     controllers.BasketController.deleteForm(id: Long)
+
 GET    /*file                              controllers.Assets.at(path="/public", file)

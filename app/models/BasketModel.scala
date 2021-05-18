@@ -1,69 +1,52 @@
 package models.BasketModel
 
-import scala.language.postfixOps
-import models.SlickProfile.api._
-import models.CRUDRepository
-import slick.additions.entity._
-import scala.concurrent.{ ExecutionContext, Future }
-import javax.inject.{ Inject, Singleton }
-import play.api.db.slick.{ DatabaseConfigProvider, HasDatabaseConfig }
-import slick.jdbc.JdbcProfile
+import com.byteslounge.slickrepo.meta.{ Entity, Keyed }
 import play.api.libs.json._
-import play.api.libs.functional.syntax._
 
-case class Basket(user: Long, book: Long, count: Long)
-
-object Baskets extends EntityTableModule[Long, Basket]("Baskets") {
-
-  class Row(tag: Tag) extends BaseEntRow(tag) with AutoNameSnakify {
-    def user = column[Long]("user_id")
-    def book = column[Long]("book_id")
-    def count = column[Long]("count")
-
-    def mapping =
-      (user, book, count) <> ((Basket.apply _).tupled, Basket.unapply)
-
-  }
-
-}
-
-@Singleton
-class BasketRepository @Inject() (
-  dbConfigProvider: DatabaseConfigProvider,
-)(
-  implicit
-  ec: ExecutionContext,
-) extends CRUDRepository[Basket](Baskets, dbConfigProvider) {
-
-  def update(id: Long, data: Basket): Future[Option[DBO]] =
-    db run {
-      Baskets.Q.filter(_.key === id).map(_.mapping) update
-        (data) map {
-          case 0 =>
-            None
-          case _ =>
-            Some(SavedEntity[Long, Basket](id, data))
-        }
-    }
-
+case class Basket(
+  override val id: Option[Long],
+  user_id: Long,
+  book_id: Long,
+  count: Long,
+)
+  extends Entity[Basket, Long] {
+  def withId(id: Long): Basket = this.copy(id = Some(id))
 }
 
 object Basket {
   implicit val _basket = Json.format[Basket]
+}
 
-  implicit val _writes: Writes[KeyedEntity[Long, Basket]] =
-    ((JsPath \ "id").write[Long] and (JsPath).write[Basket])(
-      unlift(KeyedEntity.unapply[Long, Basket]),
-    )
+import com.byteslounge.slickrepo.meta.Keyed
+import com.byteslounge.slickrepo.repository.Repository
+import javax.inject.{ Inject, Singleton }
+import play.api.db.slick.DatabaseConfigProvider
+import slick.ast.BaseTypedType
+import slick.jdbc.JdbcProfile
+import scala.concurrent.Future
 
-  implicit val _reads: Reads[KeyedEntity[Long, Basket]] =
-    ((JsPath \ "id").read[Long] and (JsPath).read[Basket])(
-      KeyedEntity.apply[Long, Basket] _,
-    )
+@Singleton
+class BasketRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)
+  extends Repository[Basket, Long] {
 
-  implicit val _format: Format[KeyedEntity[Long, Basket]] = Format(
-    _reads,
-    _writes,
-  )
+  val driver = dbConfigProvider.get[JdbcProfile].profile
+  import driver.api._
+  val pkType = implicitly[BaseTypedType[Long]]
+  val tableQuery = TableQuery[Baskets]
+  type TableType = Baskets
+
+  class Baskets(tag: slick.lifted.Tag)
+    extends Table[Basket](tag, "Baskets")
+    with Keyed[Long] {
+    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
+    def user_id = column[Long]("user_id")
+    def book_id = column[Long]("book_id")
+    def count = column[Long]("count")
+    def * = (id.?, user_id, book_id, count) <> ((Basket.apply _).tupled, Basket.unapply)
+  }
+
+  def delete(id: Long): DBIO[Int] = {
+    findOneCompiled(id).delete
+  }
 
 }

@@ -11,6 +11,7 @@ const pages = {
 	'/book': lazy(() => import('~/src/pages/Book')),
 	'/user': lazy(() => import('~/src/pages/User')),
 	'/review': lazy(() => import('~/src/pages/Review')),
+	'/basket': lazy(() => import('~/src/pages/Basket')),
 };
 
 const Loading = () => {

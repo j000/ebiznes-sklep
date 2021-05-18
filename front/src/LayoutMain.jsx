@@ -7,6 +7,7 @@ const links = {
 	'/book': 'Books',
 	'/user': 'Users',
 	'/review': 'Reviews',
+	'/basket': 'Baskets',
 };
 
 export default (props) => {

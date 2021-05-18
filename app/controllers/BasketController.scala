@@ -1,41 +1,43 @@
 package controllers
 
 import javax.inject._
-import play.api.mvc.{ Action, AnyContent }
-import play.api.mvc.{ ControllerComponents, InjectedController }
+import play.api.mvc._
 import play.api.libs.json._
-import play.api.mvc.Request
 import models.BasketModel._
 import scala.concurrent.{ ExecutionContext, Future }
+import play.api.data.Forms._
+import play.api.data.Form
+import utils.DBImplicits
 
 @Singleton
 class BasketController @Inject() (
-  val repo: BasketRepository,
+  repo: BasketRepository,
+  messagesAction: MessagesActionBuilder,
+  dbExecuter: DBImplicits,
 )(
   implicit
   ec: ExecutionContext,
 ) extends InjectedController {
-  type BasketDBO = repo.DBO
+  import dbExecuter.executeOperation
+  import views.html.basket._
 
   def index() = Action.async {
     repo
-      .index()
+      .findAll()
       .map { baskets =>
         Ok(Json.toJson(baskets))
       }
   }
 
-  def create() = Action(parse.json).async { request =>
+  def create() = Action(parse.json).async { implicit request =>
     request
       .body
       .validate[Basket]
       .fold(
-        problems => {
-          Future(BadRequest("Invalid json content"))
-        },
+        problems => Future(BadRequest("Invalid json content")),
         input => {
           repo
-            .create(input)
+            .save(input.copy(id = None))
             .map { basket =>
               Ok(Json.toJson(basket))
             }
@@ -45,7 +47,7 @@ class BasketController @Inject() (
 
   def read(id: Long) = Action.async {
     repo
-      .read(id)
+      .findOne(id)
       .map {
         case Some(basket) =>
           Ok(Json.toJson(basket))
@@ -62,12 +64,9 @@ class BasketController @Inject() (
       },
       basketData => {
         repo
-          .update(id, basketData)
-          .map {
-            case None =>
-              NotFound(Json.obj("error" -> "Not Found"))
-            case basket =>
-              Ok(Json.toJson(basket))
+          .update(basketData.withId(id))
+          .map { basket =>
+            Ok(Json.toJson(basket))
           }
       },
     )
@@ -81,6 +80,92 @@ class BasketController @Inject() (
           NotFound(Json.obj("error" -> "Not Found"))
         case _ =>
           Ok(Json.obj("status" -> s"basket $id deleted"))
+      }
+  }
+
+  val form = Form(
+    mapping(
+      "id" -> ignored(None: Option[Long]),
+      "user_id" -> longNumber,
+      "book_id" -> longNumber,
+      "count" -> longNumber,
+    )(
+      Basket.apply,
+    )(Basket.unapply),
+  )
+
+  def listForm(
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    repo
+      .findAll()
+      .map { baskets =>
+        Ok(listView(baskets))
+      }
+  }
+
+  def saveForm(
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    val formValidationResult = form.bindFromRequest()
+    formValidationResult.fold(
+      { formWithErrors: Form[Basket] =>
+        Future(BadRequest(addView(formWithErrors)))
+      },
+      { data: Basket =>
+        repo
+          .save(data.copy(id = None))
+          .map { _ =>
+            Redirect(routes.BasketController.listForm())
+              .flashing("info" -> "Basket added!")
+          }
+      },
+    )
+  }
+
+  def createForm(
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    Future(Ok(addView(form)))
+  }
+
+  def updateForm(
+    id: Long,
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    val formValidationResult = form.bindFromRequest()
+    formValidationResult.fold(
+      { formWithErrors: Form[Basket] =>
+        Future(BadRequest(editView(id, formWithErrors)))
+      },
+      { data: Basket =>
+        repo
+          .update(data.withId(id))
+          .map { _ =>
+            Redirect(routes.BasketController.listForm())
+              .flashing("info" -> "Basket modified!")
+          }
+      },
+    )
+  }
+
+  def editForm(
+    id: Long,
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    repo
+      .findOne(id)
+      .map {
+        case Some(data) =>
+          Ok(editView(id, form.fill(data)))
+        case None =>
+          NotFound
+      }
+  }
+
+  def deleteForm(
+    id: Long,
+  ) = Action.async {
+    repo
+      .delete(id)
+      .map { _ =>
+        Redirect(routes.BasketController.listForm())
+          .flashing("info" -> "Basket deleted!")
       }
   }
 

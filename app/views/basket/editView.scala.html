@@ -1,0 +1,31 @@
+@import models.BasketModel.Basket
+@(id: Long, data: Form[Basket])(implicit request: MessagesRequestHeader)
+@main("Baskets") {
+<div class="container">
+	<h1>Edit basket @id</h1>
+	@* Flash shows updates to a page *@
+	@request.flash.data.map{ case (name, value) =>
+		<div>@name: @value</div>
+	}
+	@* Global errors are not tied to any particular form field *@
+	@if(data.hasGlobalErrors) {
+		@data.globalErrors.map { error: FormError =>
+			<div>
+				@error.key: @error.message
+			</div>
+		}
+	}
+	@form(routes.BasketController.updateForm(id)) {
+		<fieldset>
+			@CSRF.formField
+			@helpers.inputHidden(data("id"))
+			@inputText(data("user_id"), Symbol("_label") -> "User ID")
+			@inputText(data("book_id"), Symbol("_label") -> "Book ID")
+			@inputText(data("count"), Symbol("_label") -> "Count")
+			@components.buttons("Update basket")
+		</fieldset>
+	}
+	@delete(routes.BasketController.deleteForm(id))
+	<a class="button" href="@routes.BasketController.listForm()">Back</a>
+</div>
+}
