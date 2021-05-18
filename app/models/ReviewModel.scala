@@ -1,66 +1,51 @@
 package models.ReviewModel
 
-import scala.language.postfixOps
-import models.SlickProfile.api._
-import models.CRUDRepository
-import slick.additions.entity._
-import scala.concurrent.{ ExecutionContext, Future }
-import javax.inject.{ Inject, Singleton }
-import play.api.db.slick.{ DatabaseConfigProvider, HasDatabaseConfig }
-import slick.jdbc.JdbcProfile
+import com.byteslounge.slickrepo.meta.{ Entity, Keyed }
 import play.api.libs.json._
-import play.api.libs.functional.syntax._
 
-case class Review(content: String, user: Long, book: Long)
-
-object Reviews extends EntityTableModule[Long, Review]("Reviews") {
-
-  class Row(tag: Tag) extends BaseEntRow(tag) with AutoNameSnakify {
-    def content = column[String]("content")
-    def user = column[Long]("user_id")
-    def book = column[Long]("book_id")
-    def mapping = (content, user, book).mapTo[Review]
-  }
-
+case class Review(
+  override val id: Option[Long],
+  content: String,
+  user_id: Long,
+  book_id: Long,
+) extends Entity[Review, Long] {
+  def withId(id: Long): Review = this.copy(id = Some(id))
 }
+
+object Review {
+  implicit val _review = Json.format[Review]
+}
+
+import com.byteslounge.slickrepo.meta.Keyed
+import com.byteslounge.slickrepo.repository.Repository
+import javax.inject.{ Inject, Singleton }
+import play.api.db.slick.DatabaseConfigProvider
+import slick.ast.BaseTypedType
+import slick.jdbc.JdbcProfile
+import scala.concurrent.Future
 
 @Singleton
-class ReviewRepository @Inject() (
-  dbConfigProvider: DatabaseConfigProvider,
-)(
-  implicit
-  ec: ExecutionContext,
-) extends CRUDRepository[Review](Reviews, dbConfigProvider) {
+class ReviewRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)
+  extends Repository[Review, Long] {
 
-  def update(id: Long, data: Review): Future[Option[DBO]] =
-    db run {
-      Reviews.Q.filter(_.key === id).map(_.mapping) update
-        (data) map {
-          case 0 =>
-            None
-          case _ =>
-            Some(SavedEntity[Long, Review](id, data))
-        }
-    }
+  val driver = dbConfigProvider.get[JdbcProfile].profile
+  import driver.api._
+  val pkType = implicitly[BaseTypedType[Long]]
+  val tableQuery = TableQuery[Reviews]
+  type TableType = Reviews
 
-}
+  class Reviews(tag: slick.lifted.Tag)
+    extends Table[Review](tag, "Reviews")
+    with Keyed[Long] {
+    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
+    def content = column[String]("content")
+    def user_id = column[Long]("user_id")
+    def book_id = column[Long]("book_id")
+    def * = (id.?, content, user_id, book_id) <> ((Review.apply _).tupled, Review.unapply)
+  }
 
-object Review extends ((String, Long, Long) => Review) {
-  implicit val _review = Json.format[Review]
-
-  implicit val _writes: Writes[KeyedEntity[Long, Review]] =
-    ((JsPath \ "id").write[Long] and (JsPath).write[Review])(
-      unlift(KeyedEntity.unapply[Long, Review]),
-    )
-
-  implicit val _reads: Reads[KeyedEntity[Long, Review]] =
-    ((JsPath \ "id").read[Long] and (JsPath).read[Review])(
-      KeyedEntity.apply[Long, Review] _,
-    )
-
-  implicit val _format: Format[KeyedEntity[Long, Review]] = Format(
-    _reads,
-    _writes,
-  )
+  def delete(id: Long): DBIO[Int] = {
+    findOneCompiled(id).delete
+  }
 
 }

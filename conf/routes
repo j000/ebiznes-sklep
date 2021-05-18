@@ -93,4 +93,11 @@ POST   /collection/$id<[1-9][0-9]*>        controllers.CollectionController.upda
 GET    /collection/$id<[1-9][0-9]*>        controllers.CollectionController.editForm(id: Long)
 POST   /collection/$id<[1-9][0-9]*>/delete controllers.CollectionController.deleteForm(id: Long)
 
+GET    /review                             controllers.ReviewController.listForm()
+POST   /review/new                         controllers.ReviewController.saveForm()
+GET    /review/new                         controllers.ReviewController.createForm()
+POST   /review/$id<[1-9][0-9]*>            controllers.ReviewController.updateForm(id: Long)
+GET    /review/$id<[1-9][0-9]*>            controllers.ReviewController.editForm(id: Long)
+POST   /review/$id<[1-9][0-9]*>/delete     controllers.ReviewController.deleteForm(id: Long)
+
 GET    /*file                              controllers.Assets.at(path="/public", file)

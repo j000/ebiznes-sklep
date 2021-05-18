@@ -10,6 +10,7 @@ const pages = {
 	'/genre': lazy(() => import('~/src/pages/Genre')),
 	'/book': lazy(() => import('~/src/pages/Book')),
 	'/user': lazy(() => import('~/src/pages/User')),
+	'/review': lazy(() => import('~/src/pages/Review')),
 };
 
 const Loading = () => {
