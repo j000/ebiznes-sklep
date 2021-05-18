@@ -1,0 +1,28 @@
+@import models.CollectionHelperModel.CollectionHelper
+@(data: Form[CollectionHelper])(implicit request: MessagesRequestHeader)
+@main("CollectionHelpers") {
+<div class="container">
+	<h1>Create new collectionhelper</h1>
+	@* Flash shows updates to a page *@
+	@request.flash.data.map{ case (name, value) =>
+		<div>@name: @value</div>
+	}
+	@* Global errors are not tied to any particular form field *@
+	@if(data.hasGlobalErrors) {
+		@data.globalErrors.map { error: FormError =>
+			<div>
+				@error.key: @error.message
+			</div>
+		}
+	}
+	@form(routes.CollectionHelperController.saveForm()) {
+		<fieldset>
+			@CSRF.formField
+			@inputText(data("collection_id"), Symbol("_label") -> "Collection ID")
+			@inputText(data("book_id"), Symbol("_label") -> "Book ID")
+			@components.buttons("Create collectionhelper")
+		</fieldset>
+	}
+	<a class="button" href="@routes.CollectionHelperController.listForm()">Back</a>
+</div>
+}

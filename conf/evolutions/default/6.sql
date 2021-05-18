@@ -5,7 +5,7 @@ CREATE TABLE "Collections" (
   "name" VARCHAR NOT NULL
 );
 
-CREATE TABLE "Collections_helper" (
+CREATE TABLE "CollectionHelpers" (
   "id" INTEGER PRIMARY KEY,
   "collection_id" INTEGER,
   "book_id" INTEGER,

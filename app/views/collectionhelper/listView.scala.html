@@ -1,0 +1,36 @@
+@import models.CollectionHelperModel.CollectionHelper
+@(collectionhelpers: Seq[CollectionHelper])(implicit request: MessagesRequestHeader)
+@main("CollectionHelpers") {
+<div class="container">
+	<h1>CollectionHelpers</h1>
+	@* Flash shows updates to a page *@
+	@request.flash.data.map{ case (name, value) =>
+		<div>@name: @value</div>
+	}
+	<table class="with-buttons">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>Collection ID</th>
+				<th>Book ID</th>
+				<th></th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@collectionhelpers.map { a =>
+				<tr>
+					<td>@a.id</td>
+					<td>@a.collection_id</td>
+					<td>@a.book_id</td>
+					<td><a class="button" href="@routes.CollectionHelperController.editForm(a.id.get)">Edit</a></td>
+					<td>
+						@delete(routes.CollectionHelperController.deleteForm(a.id.get))
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+	<a class="button" href="@routes.CollectionHelperController.createForm()">New</a>
+</div>
+}
