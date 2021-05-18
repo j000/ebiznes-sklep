@@ -18,13 +18,13 @@ const DeleteForm = (props) => {
 					return;
 				}
 
-				(async (setSubmitting) => {
-					const x = await getRequest(`${props.baseUrl}/${props.id}`, undefined, 'DELETE');
+				(async (setIsSubmitting) => {
+					await getRequest(`${props.baseUrl}/${props.id}`, undefined, 'DELETE');
 					if (props.return)
 						history.push(props.return);
 					if (props.callback)
 						props.callback();
-					setSubmitting(false);
+					setIsSubmitting(false);
 				})(setSubmitting);
 			}}
 		>
@@ -48,7 +48,6 @@ const EditForm = (props) => {
 	const { id } = useParams();
 	const [element, setElement] = useState(props.propertiesState || {});
 	const [error, setErrors] = useState(false);
-	const [query, setQuery] = useState(0);
 	const history = useHistory();
 	const withId = id ? '/' + id : '';
 
@@ -59,7 +58,7 @@ const EditForm = (props) => {
 			try {
 				const data = await getRequest(props.baseUrl + withId);
 				if (!ignore) setElement(data);
-			} catch (error) {
+			} catch (e) {
 				if (!ignore) setErrors(true);
 			}
 		};
@@ -97,7 +96,11 @@ const EditForm = (props) => {
 							{ Object.entries(props.properties).map(([key, value]) => (
 								<Fragment key={key}>
 									<label htmlFor={key}>{value}</label>
-									<Field id={key} name={key} type={props.propertiesTypes[key] || 'text'} />
+									<Field
+										id={key}
+										name={key}
+										type={props.propertiesTypes[key] || 'text'}
+									/>
 									<ErrorMessage name={key} />
 								</Fragment>
 							))}
@@ -124,15 +127,24 @@ const TableRow = (props) => {
 				{data.id}
 			</td>
 			{ Object.entries(props.properties).map(([key, value]) => (
-				<td key={key}>{data[key]}</td>
+				<td key={key}>
+					{data[key]}
+				</td>
 			))}
 			<td>
-				<Link to={`${url}/${data.id}`} className="button">
+				<Link
+					to={`${url}/${data.id}`}
+					className="button"
+				>
 					Edit
 				</Link>
 			</td>
 			<td>
-				<DeleteForm id={data.id} baseUrl={props.baseUrl} callback={props.callback} />
+				<DeleteForm
+					id={data.id}
+					baseUrl={props.baseUrl}
+					callback={props.callback}
+				/>
 			</td>
 		</tr>
 	);
@@ -140,7 +152,7 @@ const TableRow = (props) => {
 
 const ElementTable = (props) => {
 	const [elements, setElements] = useState([]);
-	const [errors, setErrors] = useState([]);
+	const [, setErrors] = useState([]);
 	let ignore = false;
 
 	const fetchData = async () => {
@@ -163,14 +175,20 @@ const ElementTable = (props) => {
 			<section className="container">
 				<h1>{props.title}</h1>
 				<table className="with-buttons">
+					<caption>{props.title}</caption>
 					<thead>
 						<tr>
-							<th>ID</th>
+							<th scope="col">ID</th>
 							{ Object.entries(props.properties).map(([key, value]) => (
-								<th key={key}>{value}</th>
+								<th
+									key={key}
+									scope="col"
+								>
+									{value}
+								</th>
 							))}
-							<th></th>
-							<th></th>
+							<th scope="col"></th>
+							<th scope="col"></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -188,7 +206,13 @@ const ElementTable = (props) => {
 			</section>
 			<section className="container">
 				<h1>Create new</h1>
-				<EditForm baseUrl={props.baseUrl} properties={props.properties} propertiesTypes={props.propertiesTypes} propertiesState={props.propertiesState} callback={fetchData} />
+				<EditForm
+					baseUrl={props.baseUrl}
+					properties={props.properties}
+					propertiesTypes={props.propertiesTypes}
+					propertiesState={props.propertiesState}
+					callback={fetchData}
+				/>
 			</section>
 		</>
 	);
@@ -200,11 +224,23 @@ const Edit = (props) => {
 	return (
 		<section className="container">
 			<h1>{props.title} {id}</h1>
-			<EditForm baseUrl={props.baseUrl} properties={props.properties} propertiesTypes={props.propertiesTypes} propertiesState={props.propertiesState} return={props.path}/>
-			<Link to={props.path} className="button">
+			<EditForm
+				baseUrl={props.baseUrl}
+				properties={props.properties}
+				propertiesTypes={props.propertiesTypes}
+				propertiesState={props.propertiesState}
+				return={props.path}
+			/>
+			<Link
+				to={props.path}
+				className="button"
+			>
 				Back
 			</Link>
-			<DeleteForm id={id} return={props.path} />
+			<DeleteForm
+				id={id}
+				return={props.path}
+			/>
 		</section>
 	);
 };
@@ -215,10 +251,23 @@ export default (props) => {
 	return (
 		<Switch>
 			<Route path={`${path}/:id`}>
-				<Edit title={props.editTitle} baseUrl={props.baseUrl} path={path} properties={props.properties} propertiesState={props.propertiesState} propertiesTypes={props.propertiesTypes} />
+				<Edit
+					title={props.editTitle}
+					baseUrl={props.baseUrl}
+					path={path}
+					properties={props.properties}
+					propertiesState={props.propertiesState}
+					propertiesTypes={props.propertiesTypes}
+				/>
 			</Route>
 			<Route>
-				<ElementTable title={props.baseTitle} baseUrl={props.baseUrl} properties={props.properties} propertiesState={props.propertiesState} propertiesTypes={props.propertiesTypes} />
+				<ElementTable
+					title={props.baseTitle}
+					baseUrl={props.baseUrl}
+					properties={props.properties}
+					propertiesState={props.propertiesState}
+					propertiesTypes={props.propertiesTypes}
+				/>
 			</Route>
 		</Switch>
 	);
