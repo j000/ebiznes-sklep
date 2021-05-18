@@ -5,6 +5,7 @@ const links = {
 	'/author': 'Authors',
 	'/genre': 'Genres',
 	'/book': 'Books',
+	'/user': 'Users',
 };
 
 export default (props) => {
