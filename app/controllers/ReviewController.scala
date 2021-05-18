@@ -80,7 +80,7 @@ class ReviewController @Inject() (
         case 0 =>
           NotFound(Json.obj("error" -> "Not Found"))
         case _ =>
-          Ok(s"review $id deleted")
+          Ok(Json.obj("status" -> s"review $id deleted"))
       }
   }
 

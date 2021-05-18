@@ -79,7 +79,7 @@ class AuthorController @Inject() (
         case 0 =>
           NotFound(Json.obj("error" -> "Not Found"))
         case _ =>
-          Ok(s"author $id deleted")
+          Ok(Json.obj("status" -> s"author $id deleted"))
       }
   }
 

@@ -79,7 +79,7 @@ class GenreController @Inject() (
         case 0 =>
           NotFound(Json.obj("error" -> "Not Found"))
         case _ =>
-          Ok(s"genre $id deleted")
+          Ok(Json.obj("status" -> s"genre $id deleted"))
       }
   }
 

@@ -79,7 +79,7 @@ class CollectionController @Inject() (
         case 0 =>
           NotFound(Json.obj("error" -> "Not Found"))
         case _ =>
-          Ok(s"collection $id deleted")
+          Ok(Json.obj("status" -> s"collection $id deleted"))
       }
   }
 

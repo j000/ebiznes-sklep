@@ -80,7 +80,7 @@ class OrderController @Inject() (
         case 0 =>
           NotFound(Json.obj("error" -> "Not Found"))
         case _ =>
-          Ok(s"order $id deleted")
+          Ok(Json.obj("status" -> s"order $id deleted"))
       }
   }
 

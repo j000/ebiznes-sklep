@@ -80,7 +80,7 @@ class FavouriteController @Inject() (
         case 0 =>
           NotFound(Json.obj("error" -> "Not Found"))
         case _ =>
-          Ok(s"favourite $id deleted")
+          Ok(Json.obj("status" -> s"favourite $id deleted"))
       }
   }
 
