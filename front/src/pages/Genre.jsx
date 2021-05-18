@@ -6,7 +6,7 @@ import { getRequest } from '~/src/utils.jsx';
 
 ////////////////////////////////////////
 
-const baseUrl = 'http://localhost:9000/api/author';
+const baseUrl = 'http://localhost:9000/api/genre';
 
 const properties = {
 	name: 'Name',
@@ -16,8 +16,8 @@ const propertiesState = {
 	name: '',
 };
 
-const baseTitle = 'Author';
-const editTitle = 'Edit author';
+const baseTitle = 'Genre';
+const editTitle = 'Edit genre';
 
 ////////////////////////////////////////
 

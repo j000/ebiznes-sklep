@@ -6,18 +6,24 @@ import { getRequest } from '~/src/utils.jsx';
 
 ////////////////////////////////////////
 
-const baseUrl = 'http://localhost:9000/api/author';
+const baseUrl = 'http://localhost:9000/api/book';
 
 const properties = {
-	name: 'Name',
+	title: 'Title',
+	author_id: 'Author ID',
+	genre_id: 'Genre ID',
+	price: 'Price',
 };
 
 const propertiesState = {
-	name: '',
+	title: '',
+	author_id: '',
+	genre_id: '',
+	price: '',
 };
 
-const baseTitle = 'Author';
-const editTitle = 'Edit author';
+const baseTitle = 'Books';
+const editTitle = 'Edit book';
 
 ////////////////////////////////////////
 
@@ -109,9 +115,21 @@ const EditForm = (props) => {
 				{({ isSubmitting }) => (
 					<Form>
 						<fieldset disabled={isSubmitting}>
-							<label htmlFor="name">Name</label>
-							<Field id="name" name="name" type="text" />
-							<ErrorMessage name="name" />
+							<label htmlFor="title">Title</label>
+							<Field id="title" name="title" type="text" />
+							<ErrorMessage name="title" />
+
+							<label htmlFor="author_id">AuthorId</label>
+							<Field id="author_id" name="author_id" type="number" />
+							<ErrorMessage name="author_id" />
+
+							<label htmlFor="genre_id">GenreId</label>
+							<Field id="genre_id" name="genre_id" type="number" />
+							<ErrorMessage name="genre_id" />
+
+							<label htmlFor="price">Price</label>
+							<Field id="price" name="price" type="number" />
+							<ErrorMessage name="price" />
 
 							<div className="right">
 								<button type="submit">Submit</button>

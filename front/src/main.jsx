@@ -6,6 +6,8 @@ import LayoutMain from '~/src/LayoutMain';
 import HomePage from '~/src/pages/HomePage';
 
 const Author = lazy(() => import('~/src/pages/Author'));
+const Genre = lazy(() => import('~/src/pages/Genre'));
+const Book = lazy(() => import('~/src/pages/Book'));
 
 const Loading = () => {
 	return (
@@ -23,6 +25,12 @@ const App = () => {
 					<Switch>
 						<Route path="/author">
 							<Author />
+						</Route>
+						<Route path="/genre">
+							<Genre />
+						</Route>
+						<Route path="/book">
+							<Book />
 						</Route>
 						<Route path="/" exact>
 							<HomePage />

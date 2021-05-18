@@ -1,6 +1,12 @@
 import React, { Fragment } from 'react';
 import { Route, Link } from 'react-router-dom';
 
+const links = {
+	'/author': 'Authors',
+	'/genre': 'Genres',
+	'/book': 'Books',
+};
+
 export default (props) => {
 	return (
 		<Fragment>
@@ -16,22 +22,16 @@ export default (props) => {
 					Yup.
 				</Link>
 				<ul>
-					<li>
-						<Link
-							className="button button-outline"
-							to="/author"
-						>
-							Authors
-						</Link>
-					</li>
-					<li>
-						<Link
-							className="button button-outline"
-							to="/fail"
-						>
-							404
-						</Link>
-					</li>
+					{ Object.entries(links).map(([key, value]) => (
+						<li key={value}>
+							<Link
+								className="button button-outline"
+								to={key}
+							>
+								{value}
+							</Link>
+						</li>
+					))}
 				</ul>
 			</header>
 			{props.children}
