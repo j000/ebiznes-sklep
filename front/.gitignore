@@ -1,0 +1,27 @@
+# Logs
+logs
+*.log
+yarn-debug.log*
+yarn-error.log*
+
+dist/
+
+# Dependency directories
+node_modules/
+
+# dotenv environment variables file
+.env
+.env.test
+
+# yarn v2
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# no npm
+package-lock.json
+
+# parcel
+.parcel-cache/

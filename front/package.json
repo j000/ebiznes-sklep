@@ -1,0 +1,41 @@
+{
+	"name": "front",
+	"version": "0.0.1",
+	"license": "MIT",
+	"source": "./src/index.html",
+	"app": "dist/index.html",
+	"targets": {
+		"app": {}
+	},
+	"scripts": {
+		"clean": "rm -rf dist/",
+		"start": "yarn parcel serve --no-autoinstall --hmr-port 3000 --port 5000 ./src/index.html",
+		"build": "yarn parcel build ./src/index.html"
+	},
+	"dependencies": {
+		"axios": "^0.21.x",
+		"formik": "^2.2.6",
+		"milligram": "^1.4.1",
+		"normalize.css": "^8.0.1",
+		"react": "^17.x",
+		"react-dom": "^17.x",
+		"react-router-dom": "^5.2.0"
+	},
+	"devDependencies": {
+		"@babel/core": "^7.x",
+		"@babel/preset-react": "^7.x",
+		"@parcel/transformer-sass": "2.0.0-beta.2",
+		"parcel": "next"
+	},
+	"browserslist": "> 5%, not dead",
+	"babel": {
+		"presets": [
+			[
+				"@babel/preset-react"
+			],
+			[
+				"@babel/env"
+			]
+		]
+	}
+}

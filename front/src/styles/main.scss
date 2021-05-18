@@ -1,0 +1,195 @@
+@charset "utf-8";
+
+@import 'normalize.css/normalize.css';
+
+$white: #fff;
+$platinum: #ddd;
+$orange: #fc6438;
+$orange: #dc7138;
+$orange: #dc7d1e;
+$tealBlue: #487a92;
+$black: #111;
+
+$red: #ca604d;
+$red: #ca4d5e;
+
+$color-primary: #8A15BB;
+
+@mixin desktop {
+	@media screen and (min-width: 40rem) {
+		@content;
+	}
+}
+
+@import 'milligram/src/milligram.sass';
+
+@import 'forms';
+@import 'tables';
+
+textarea {
+	resize: vertical;
+}
+body {
+	quotes: "\201E" "\201D";
+}
+// .button,
+// button,
+// input[type="button"],
+// input[type="reset"],
+// input[type="submit"] {
+// 	// height: revert;
+// }
+
+.button-accent {
+	background-color: $orange;
+	border-color: $orange;
+	color: $black;
+}
+
+// main
+body {
+	font-family: 'Overpass', 'Josefin Sans', 'Lato', 'Roboto', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+	// font-size: 16px;
+
+	> :first-child {
+		min-height: 100vh;
+		display: flex;
+		flex-direction: column;
+
+		> :nth-last-child(2) {
+			margin-bottom: auto;
+		}
+
+		// & > :last-child {
+		// 	margin-top: auto;
+		// }
+	}
+}
+
+
+.container + .container {
+	margin-top: 2rem;
+}
+
+header.container {
+	padding-top: 2rem;
+	padding-bottom: 2rem;
+}
+
+footer.container {
+	padding-top: 2rem;
+}
+
+// navbar
+header {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
+
+	@include desktop {
+		flex-direction: row;
+	}
+
+	*,
+	.button, button, li {
+		margin: 0;
+	}
+
+	img {
+		vertical-align: top;
+		height: 4.6rem; // just like h1
+	}
+
+	svg {
+		$height: 0.8em;
+		height: $height;
+		width: 99.449 / 45.667 * $height;
+		vertical-align: text-top;
+		display: inline-block;
+		stroke-width: 0;
+		stroke: currentColor;
+		fill: currentColor;
+	}
+
+	ul {
+		list-style: none;
+		display: flex;
+		flex-flow: row wrap;
+		align-items: stretch;
+		justify-content: space-evenly;
+
+		li {
+			height: 100%;
+			margin-top: 1.2rem;
+
+			@include desktop {
+				margin-top: 0;
+			}
+
+
+			+ li {
+				margin-left: 0.75rem;
+			}
+		}
+
+		a {
+			display: inline-block;
+			text-align: center;
+			vertical-align: middle;
+			line-height: 3.8rem;
+
+
+			> * {
+				height: 100%;
+			}
+
+			&:hover {
+				background-color: #bbb;
+			}
+		}
+	}
+}
+
+// horizontal bars
+header, footer {
+	// full screen width - center width - (something more than scrollbars)
+	$offset: 5vw;
+	--x: calc((100vw - 100% - #{$offset}) / 2);
+	background-color: $platinum;
+
+	&:after {
+		background-color: $platinum;
+		box-shadow: -$offset 0 $platinum, $offset 0 $platinum;
+
+		z-index: -1;
+		content: "";
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		// width: 100%;
+		left: calc(0px - var(--x));
+		right: calc(0px - var(--x));
+	}
+}
+
+
+// DEBUG
+// a:not([href$='new']):not([href$='delete']):not([href$='edit']):not([href$='/']) {
+// 	outline: 2px solid red;
+// }
+
+// *:hover {
+// 	outline: 1px dotted blue;
+// }
+
+.button,
+button,
+input[type="button"],
+input[type="reset"],
+input[type="submit"] {
+	&.danger {
+		background-color: $red;
+		border-color: $red;
+	}
+}
