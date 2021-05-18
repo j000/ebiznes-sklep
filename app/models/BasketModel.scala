@@ -8,8 +8,7 @@ case class Basket(
   user_id: Long,
   book_id: Long,
   count: Long,
-)
-  extends Entity[Basket, Long] {
+) extends Entity[Basket, Long] {
   def withId(id: Long): Basket = this.copy(id = Some(id))
 }
 
@@ -42,7 +41,11 @@ class BasketRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)
     def user_id = column[Long]("user_id")
     def book_id = column[Long]("book_id")
     def count = column[Long]("count")
-    def * = (id.?, user_id, book_id, count) <> ((Basket.apply _).tupled, Basket.unapply)
+
+    def * =
+      (id.?, user_id, book_id, count) <>
+        ((Basket.apply _).tupled, Basket.unapply)
+
   }
 
   def delete(id: Long): DBIO[Int] = {

@@ -90,9 +90,7 @@ class ReviewController @Inject() (
       "content" -> nonEmptyText,
       "user_id" -> longNumber,
       "book_id" -> longNumber,
-    )(
-      Review.apply,
-    )(Review.unapply),
+    )(Review.apply)(Review.unapply),
   )
 
   def listForm(

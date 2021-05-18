@@ -89,9 +89,7 @@ class BasketController @Inject() (
       "user_id" -> longNumber,
       "book_id" -> longNumber,
       "count" -> longNumber,
-    )(
-      Basket.apply,
-    )(Basket.unapply),
+    )(Basket.apply)(Basket.unapply),
   )
 
   def listForm(

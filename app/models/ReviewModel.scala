@@ -41,7 +41,11 @@ class ReviewRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)
     def content = column[String]("content")
     def user_id = column[Long]("user_id")
     def book_id = column[Long]("book_id")
-    def * = (id.?, content, user_id, book_id) <> ((Review.apply _).tupled, Review.unapply)
+
+    def * =
+      (id.?, content, user_id, book_id) <>
+        ((Review.apply _).tupled, Review.unapply)
+
   }
 
   def delete(id: Long): DBIO[Int] = {
