@@ -13,6 +13,7 @@ const pages = {
 	'/review': lazy(() => import('~/src/pages/Review')),
 	'/basket': lazy(() => import('~/src/pages/Basket')),
 	'/collection': lazy(() => import('~/src/pages/Collection')),
+	'/collectionhelper': lazy(() => import('~/src/pages/CollectionHelper')),
 };
 
 const Loading = () => {
