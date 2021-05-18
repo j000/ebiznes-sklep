@@ -105,7 +105,7 @@ class UserController @Inject() (
     val formValidationResult = form.bindFromRequest()
     formValidationResult.fold(
       { formWithErrors: Form[User] =>
-        Future(BadRequest(addView(formWithErrors)))
+        Future(BadRequest(editView(formWithErrors)))
       },
       { data: User =>
         repo
@@ -120,7 +120,7 @@ class UserController @Inject() (
 
   def createForm(
   ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
-    Future(Ok(addView(form)))
+    Future(Ok(editView(form)))
   }
 
   def updateForm(
@@ -129,7 +129,7 @@ class UserController @Inject() (
     val formValidationResult = form.bindFromRequest()
     formValidationResult.fold(
       { formWithErrors: Form[User] =>
-        Future(BadRequest(editView(id, formWithErrors)))
+        Future(BadRequest(editView(formWithErrors, id)))
       },
       { data: User =>
         repo
@@ -149,7 +149,7 @@ class UserController @Inject() (
       .findOne(id)
       .map {
         case Some(data) =>
-          Ok(editView(id, form.fill(data)))
+          Ok(editView(form.fill(data), id))
         case None =>
           NotFound
       }

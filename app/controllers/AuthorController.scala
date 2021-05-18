@@ -103,7 +103,7 @@ class AuthorController @Inject() (
     val formValidationResult = form.bindFromRequest()
     formValidationResult.fold(
       { formWithErrors: Form[Author] =>
-        Future(BadRequest(addView(formWithErrors)))
+        Future(BadRequest(editView(formWithErrors)))
       },
       { data: Author =>
         repo
@@ -118,7 +118,7 @@ class AuthorController @Inject() (
 
   def createForm(
   ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
-    Future(Ok(addView(form)))
+    Future(Ok(editView(form)))
   }
 
   def updateForm(
@@ -127,7 +127,7 @@ class AuthorController @Inject() (
     val formValidationResult = form.bindFromRequest()
     formValidationResult.fold(
       { formWithErrors: Form[Author] =>
-        Future(BadRequest(editView(id, formWithErrors)))
+        Future(BadRequest(editView(formWithErrors, id)))
       },
       { data: Author =>
         repo
@@ -147,7 +147,7 @@ class AuthorController @Inject() (
       .findOne(id)
       .map {
         case Some(data) =>
-          Ok(editView(id, form.fill(data)))
+          Ok(editView(form.fill(data), id))
         case None =>
           NotFound
       }

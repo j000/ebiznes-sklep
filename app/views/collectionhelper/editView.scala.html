@@ -1,8 +1,12 @@
 @import models.CollectionHelperModel.CollectionHelper
-@(id: Long, data: Form[CollectionHelper])(implicit request: MessagesRequestHeader)
+@(data: Form[CollectionHelper], id: Long = 0)(implicit request: MessagesRequestHeader)
 @main("CollectionHelpers") {
 <div class="container">
-	<h1>Edit collectionhelper @id</h1>
+	@if(id > 0) {
+		<h1>Edit collection helper @id</h1>
+	} else {
+		<h1>Create new collection helper</h1>
+	}
 	@* Flash shows updates to a page *@
 	@request.flash.data.map{ case (name, value) =>
 		<div>@name: @value</div>
@@ -18,7 +22,6 @@
 	@form(routes.CollectionHelperController.updateForm(id)) {
 		<fieldset>
 			@CSRF.formField
-			@helpers.inputHidden(data("id"))
 			@inputText(data("collection_id"), Symbol("_label") -> "Collection ID")
 			@inputText(data("book_id"), Symbol("_label") -> "Book ID")
 			@components.buttons("Update collectionhelper")

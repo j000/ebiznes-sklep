@@ -1,14 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 export default () => {
 	const [count, setCount] = useState(0);
-
-	// useEffect(() => {
-	// 	document.title = 'Loaded';
-	// 	return () => {
-	// 		document.title = 'Unloaded';
-	// 	};
-	// });
 
 	return (
 		<section className="container">

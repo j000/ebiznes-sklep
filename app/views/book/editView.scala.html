@@ -1,8 +1,12 @@
 @import models.BookModel.Book
-@(id: Long, data: Form[Book], authors: Seq[(String, String)], genres: Seq[(String, String)])(implicit request: MessagesRequestHeader)
+@(data: Form[Book], authors: Seq[(String, String)], genres: Seq[(String, String)], id: Long = 0)(implicit request: MessagesRequestHeader)
 @main("Books") {
 <div class="container">
-	<h1>Edit book @id</h1>
+	@if(id > 0) {
+		<h1>Edit book @id</h1>
+	} else {
+		<h1>Create new book</h1>
+	}
 	@* Flash shows updates to a page *@
 	@request.flash.data.map{ case (name, value) =>
 		<div>@name: @value</div>
@@ -18,7 +22,6 @@
 	@form(routes.BookController.updateForm(id)) {
 		<fieldset>
 			@CSRF.formField
-			@helpers.inputHidden(data("id"))
 			@inputText(data("title"), Symbol("_label") -> "Title")
 			@select(data("author_id"),
 				options = authors,

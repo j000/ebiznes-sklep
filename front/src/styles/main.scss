@@ -29,16 +29,6 @@ $color-primary: #8A15BB;
 textarea {
 	resize: vertical;
 }
-body {
-	quotes: "\201E" "\201D";
-}
-// .button,
-// button,
-// input[type="button"],
-// input[type="reset"],
-// input[type="submit"] {
-// 	// height: revert;
-// }
 
 .button-accent {
 	background-color: $orange;
@@ -46,10 +36,9 @@ body {
 	color: $black;
 }
 
-// main
 body {
 	font-family: 'Overpass', 'Josefin Sans', 'Lato', 'Roboto', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
-	// font-size: 16px;
+	quotes: "\201E" "\201D";
 
 	> :first-child {
 		min-height: 100vh;
@@ -60,12 +49,8 @@ body {
 			margin-bottom: auto;
 		}
 
-		// & > :last-child {
-		// 	margin-top: auto;
-		// }
 	}
 }
-
 
 .container + .container {
 	margin-top: 2rem;

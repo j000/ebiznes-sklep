@@ -1,8 +1,12 @@
 @import models.GenreModel.Genre
-@(id: Long, data: Form[Genre])(implicit request: MessagesRequestHeader)
+@(data: Form[Genre], id: Long = 0)(implicit request: MessagesRequestHeader)
 @main("Genres") {
 <div class="container">
-	<h1>Edit genre @id</h1>
+	@if(id > 0) {
+		<h1>Edit genre @id</h1>
+	} else {
+		<h1>Create new genre</h1>
+	}
 	@* Flash shows updates to a page *@
 	@request.flash.data.map{ case (name, value) =>
 		<div>@name: @value</div>
@@ -18,7 +22,6 @@
 	@form(routes.GenreController.updateForm(id)) {
 		<fieldset>
 			@CSRF.formField
-			@helpers.inputHidden(data("id"))
 			@inputText(data("name"), Symbol("_label") -> "Name")
 			@components.buttons("Update genre")
 		</fieldset>

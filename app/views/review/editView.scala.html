@@ -1,8 +1,12 @@
 @import models.ReviewModel.Review
-@(id: Long, data: Form[Review])(implicit request: MessagesRequestHeader)
+@(data: Form[Review], id: Long = 0)(implicit request: MessagesRequestHeader)
 @main("Reviews") {
 <div class="container">
-	<h1>Edit review @id</h1>
+	@if(id > 0) {
+		<h1>Edit review @id</h1>
+	} else {
+		<h1>Create new review</h1>
+	}
 	@* Flash shows updates to a page *@
 	@request.flash.data.map{ case (content, value) =>
 		<div>@content: @value</div>
@@ -18,7 +22,6 @@
 	@form(routes.ReviewController.updateForm(id)) {
 		<fieldset>
 			@CSRF.formField
-			@helpers.inputHidden(data("id"))
 			@inputText(data("content"), Symbol("_label") -> "Review")
 			@inputText(data("user_id"), Symbol("_label") -> "User ID")
 			@inputText(data("book_id"), Symbol("_label") -> "Book ID")

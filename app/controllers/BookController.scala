@@ -113,7 +113,7 @@ class BookController @Inject() (
       { formWithErrors: Form[Book] =>
         Future.successful(
           BadRequest(
-            addView(
+            editView(
               formWithErrors,
               Seq[(String, String)](),
               Seq[(String, String)](),
@@ -141,7 +141,7 @@ class BookController @Inject() (
       val authorOptions = authors.map(a => (a.id.get.toString, a.name));
       genres.map { genres =>
         val genresOptions = genres.map(g => (g.id.get.toString, g.name));
-        Ok(addView(form, authorOptions, genresOptions))
+        Ok(editView(form, authorOptions, genresOptions))
       }
     }
   }
@@ -161,7 +161,7 @@ class BookController @Inject() (
             genres.map { genres =>
               val genresOptions = genres.map(g => (g.id.get.toString, g.name));
               BadRequest(
-                editView(id, formWithErrors, authorOptions, genresOptions),
+                editView(formWithErrors, authorOptions, genresOptions, id),
               )
             }
           }
@@ -192,7 +192,7 @@ class BookController @Inject() (
           val authorOptions = authors.map(a => (a.id.get.toString, a.name));
           genres.map { genres =>
             val genresOptions = genres.map(g => (g.id.get.toString, g.name));
-            Ok(editView(id, form.fill(book), authorOptions, genresOptions))
+            Ok(editView(form.fill(book), authorOptions, genresOptions, id))
           }
         }
     }

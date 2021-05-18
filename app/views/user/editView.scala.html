@@ -1,8 +1,12 @@
 @import models.UserModel.User
-@(id: Long, data: Form[User])(implicit request: MessagesRequestHeader)
+@(data: Form[User], id: Long = 0)(implicit request: MessagesRequestHeader)
 @main("Users") {
 <div class="container">
-	<h1>Edit user @id</h1>
+	@if(id > 0) {
+		<h1>Edit user @id</h1>
+	} else {
+		<h1>Create new user</h1>
+	}
 	@* Flash shows updates to a page *@
 	@request.flash.data.map{ case (name, value) =>
 		<div>@name: @value</div>
@@ -18,7 +22,6 @@
 	@form(routes.UserController.updateForm(id)) {
 		<fieldset>
 			@CSRF.formField
-			@helpers.inputHidden(data("id"))
 			@inputText(data("login"), Symbol("_label") -> "Login")
 			@inputText(data("password"), Symbol("_label") -> "Password")
 			@components.buttons("Update user")
