@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { Route, Link } from 'react-router-dom';
+import { Route, Link, NavLink } from 'react-router-dom';
 
 const links = {
 	'/author': 'Authors',
@@ -24,12 +24,13 @@ export default (props) => {
 				<ul>
 					{ Object.entries(links).map(([key, value]) => (
 						<li key={value}>
-							<Link
+							<NavLink
 								className="button button-outline"
+								exact
 								to={key}
 							>
 								{value}
-							</Link>
+							</NavLink>
 						</li>
 					))}
 				</ul>

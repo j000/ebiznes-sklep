@@ -192,4 +192,17 @@ input[type="submit"] {
 		background-color: $red;
 		border-color: $red;
 	}
+
+	&.active {
+		// background-color: rgba(0, 0, 0, 10%);
+		color: $black;
+		border-color: $black;
+
+		&:focus,
+		&:hover {
+			// background-color: rgba(0, 0, 0, 15%);
+			color: $black;
+			border-color: $black;
+		}
+	}
 }

@@ -5,9 +5,11 @@ import { HashRouter as Router, Switch, Route } from "react-router-dom";
 import LayoutMain from '~/src/LayoutMain';
 import HomePage from '~/src/pages/HomePage';
 
-const Author = lazy(() => import('~/src/pages/Author'));
-const Genre = lazy(() => import('~/src/pages/Genre'));
-const Book = lazy(() => import('~/src/pages/Book'));
+const pages = {
+	'/author': lazy(() => import('~/src/pages/Author')),
+	'/genre': lazy(() => import('~/src/pages/Genre')),
+	'/book': lazy(() => import('~/src/pages/Book')),
+};
 
 const Loading = () => {
 	return (
@@ -23,18 +25,12 @@ const App = () => {
 			<LayoutMain>
 				<Suspense fallback={<Loading />}>
 					<Switch>
-						<Route path="/author">
-							<Author />
-						</Route>
-						<Route path="/genre">
-							<Genre />
-						</Route>
-						<Route path="/book">
-							<Book />
-						</Route>
 						<Route path="/" exact>
 							<HomePage />
 						</Route>
+						{ Object.entries(pages).map(([key, value]) => (
+								<Route key={key} path={key} component={value} />
+						))}
 						<Route>
 							<section className="container">
 								<h1>Not Found</h1>
