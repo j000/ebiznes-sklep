@@ -1,3 +1,5 @@
+@import 'normalize.css/normalize.css';
+
 $white: #fff;
 $platinum: #ddd;
 $orange: #fc6438;
@@ -17,7 +19,7 @@ $color-primary: #8A15BB;
 	}
 }
 
-@import 'lib/milligram/src/milligram.sass';
+@import 'milligram/src/milligram.sass';
 
 @import 'styles/forms';
 @import 'styles/tables';

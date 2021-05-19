@@ -10,7 +10,10 @@
 		<link rel="stylesheet" href="@routes.Assets.at("index.css")">
 	</head>
 	<body>
-		@components.header()
-		@content
+		<main>
+			@components.header()
+			@content
+			@components.footer()
+		</main>
 	</body>
 </html>

@@ -1,31 +1,3 @@
-@charset "utf-8";
-
-@import 'normalize.css/normalize.css';
-
-$white: #fff;
-$platinum: #ddd;
-$orange: #fc6438;
-$orange: #dc7138;
-$orange: #dc7d1e;
-$tealBlue: #487a92;
-$black: #111;
-
-$red: #ca604d;
-$red: #ca4d5e;
-
-$color-primary: #8A15BB;
-
-@mixin desktop {
-	@media screen and (min-width: 40rem) {
-		@content;
-	}
-}
-
-@import 'milligram/src/milligram.sass';
-
-@import 'forms';
-@import 'tables';
-
 textarea {
 	resize: vertical;
 }

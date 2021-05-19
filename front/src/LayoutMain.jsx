@@ -24,7 +24,9 @@ export default (props) => {
 					className="title"
 					to="/"
 				>
-					Yup.
+					<h1>
+						Yup.
+					</h1>
 				</Link>
 				<ul>
 					{ Object.entries(links).map(([key, value]) => (
