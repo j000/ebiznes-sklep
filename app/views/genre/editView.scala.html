@@ -19,7 +19,11 @@
 			</div>
 		}
 	}
-	@form(routes.GenreController.updateForm(id)) {
+	@form(if (id > 0) {
+		routes.GenreController.updateForm(id)
+	} else {
+		routes.GenreController.saveForm()
+	}) {
 		<fieldset>
 			@CSRF.formField
 			@inputText(data("name"), Symbol("_label") -> "Name")

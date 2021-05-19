@@ -19,7 +19,11 @@
 			</div>
 		}
 	}
-	@form(routes.BasketController.updateForm(id)) {
+	@form(if (id > 0) {
+		routes.BasketController.updateForm(id)
+	} else {
+		routes.BasketController.saveForm()
+	}) {
 		<fieldset>
 			@CSRF.formField
 			@inputText(data("user_id"), Symbol("_label") -> "User ID")

@@ -19,7 +19,11 @@
 			</div>
 		}
 	}
-	@form(routes.CollectionHelperController.updateForm(id)) {
+	@form(if (id > 0) {
+		routes.CollectionHelperController.updateForm(id)
+	} else {
+		routes.CollectionHelperController.saveForm()
+	}) {
 		<fieldset>
 			@CSRF.formField
 			@inputText(data("collection_id"), Symbol("_label") -> "Collection ID")

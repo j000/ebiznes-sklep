@@ -8,8 +8,8 @@
 		<h1>Create new review</h1>
 	}
 	@* Flash shows updates to a page *@
-	@request.flash.data.map{ case (content, value) =>
-		<div>@content: @value</div>
+	@request.flash.data.map{ case (name, value) =>
+		<div>@name: @value</div>
 	}
 	@* Global errors are not tied to any particular form field *@
 	@if(data.hasGlobalErrors) {
@@ -19,7 +19,11 @@
 			</div>
 		}
 	}
-	@form(routes.ReviewController.updateForm(id)) {
+	@form(if (id > 0) {
+		routes.ReviewController.updateForm(id)
+	} else {
+		routes.ReviewController.saveForm()
+	}) {
 		<fieldset>
 			@CSRF.formField
 			@inputText(data("content"), Symbol("_label") -> "Review")

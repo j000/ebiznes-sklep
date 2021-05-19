@@ -7,7 +7,7 @@ const getRequest = async (url, data, method='GET') => {
 		},
 		body: data ? JSON.stringify(data) : undefined,
 	});
-	return await result.json();
+	return result.json();
 };
 
 export {
