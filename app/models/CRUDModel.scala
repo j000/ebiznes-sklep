@@ -36,7 +36,6 @@ class CRUDRepository[T] @Inject() (
 
   def read(id: Long): Future[Option[DBO]] =
     db run {
-      // TODO how to skip dots here?
       table.Q.filter(_.key === id).result.headOption
     }
 

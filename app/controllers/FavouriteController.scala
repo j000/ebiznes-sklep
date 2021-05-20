@@ -31,7 +31,7 @@ class FavouriteController @Inject() (
       .validate[Favourite]
       .fold(
         problems => {
-          Future(BadRequest("Invalid json content"))
+          Future.successful(BadRequest(Json.obj("error" -> "Invalid Json")))
         },
         input => {
           repo
@@ -58,7 +58,7 @@ class FavouriteController @Inject() (
     val favouriteResult = request.body.validate[Favourite]
     favouriteResult.fold(
       errors => {
-        Future(BadRequest(Json.obj("error" -> "Invalid Json")))
+        Future.successful(BadRequest(Json.obj("error" -> "Invalid Json")))
       },
       favouriteData => {
         repo

@@ -80,14 +80,18 @@ const EditForm = (props) => {
 				initialValues={element}
 				enableReinitialize={true}
 				onSubmit={async (values, { resetForm, setSubmitting }) => {
-					await getRequest(props.baseUrl + withId, values, id ? 'PUT' : 'POST')
+					const ans = await getRequest(props.baseUrl + withId, values, id ? 'PUT' : 'POST')
+					setSubmitting(false);
+					if (ans.error) {
+						console.log(ans.error);
+						return;
+					}
 					if (props.return)
 						history.push(props.return);
 					if (props.callback) {
 						props.callback();
 						resetForm();
 					}
-					setSubmitting(false);
 				}}
 			>
 				{({ isSubmitting }) => (

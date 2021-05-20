@@ -34,7 +34,7 @@ class CollectionHelperController @Inject() (
       .body
       .validate[CollectionHelper]
       .fold(
-        problems => Future(BadRequest("Invalid json content")),
+        problems => Future.successful(BadRequest(Json.obj("error" -> "Invalid Json"))),
         input => {
           repo
             .save(input.copy(id = None))
@@ -60,7 +60,7 @@ class CollectionHelperController @Inject() (
     val collectionhelperResult = request.body.validate[CollectionHelper]
     collectionhelperResult.fold(
       errors => {
-        Future(BadRequest(Json.obj("error" -> "Invalid Json")))
+        Future.successful(BadRequest(Json.obj("error" -> "Invalid Json")))
       },
       collectionhelperData => {
         repo
@@ -105,7 +105,7 @@ class CollectionHelperController @Inject() (
     val formValidationResult = form.bindFromRequest()
     formValidationResult.fold(
       { formWithErrors: Form[CollectionHelper] =>
-        Future(BadRequest(editView(formWithErrors)))
+        Future.successful(BadRequest(editView(formWithErrors)))
       },
       { data: CollectionHelper =>
         repo
@@ -120,7 +120,7 @@ class CollectionHelperController @Inject() (
 
   def createForm(
   ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
-    Future(Ok(editView(form)))
+    Future.successful(Ok(editView(form)))
   }
 
   def updateForm(
@@ -129,7 +129,7 @@ class CollectionHelperController @Inject() (
     val formValidationResult = form.bindFromRequest()
     formValidationResult.fold(
       { formWithErrors: Form[CollectionHelper] =>
-        Future(BadRequest(editView(formWithErrors, id)))
+        Future.successful(BadRequest(editView(formWithErrors, id)))
       },
       { data: CollectionHelper =>
         repo

@@ -34,7 +34,7 @@ class BasketController @Inject() (
       .body
       .validate[Basket]
       .fold(
-        problems => Future(BadRequest("Invalid json content")),
+        problems => Future.successful(BadRequest(Json.obj("error" -> "Invalid Json"))),
         input => {
           repo
             .save(input.copy(id = None))
@@ -60,7 +60,7 @@ class BasketController @Inject() (
     val basketResult = request.body.validate[Basket]
     basketResult.fold(
       errors => {
-        Future(BadRequest(Json.obj("error" -> "Invalid Json")))
+        Future.successful(BadRequest(Json.obj("error" -> "Invalid Json")))
       },
       basketData => {
         repo
@@ -106,7 +106,7 @@ class BasketController @Inject() (
     val formValidationResult = form.bindFromRequest()
     formValidationResult.fold(
       { formWithErrors: Form[Basket] =>
-        Future(BadRequest(editView(formWithErrors)))
+        Future.successful(BadRequest(editView(formWithErrors)))
       },
       { data: Basket =>
         repo
@@ -121,7 +121,7 @@ class BasketController @Inject() (
 
   def createForm(
   ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
-    Future(Ok(editView(form)))
+    Future.successful(Ok(editView(form)))
   }
 
   def updateForm(
@@ -130,7 +130,7 @@ class BasketController @Inject() (
     val formValidationResult = form.bindFromRequest()
     formValidationResult.fold(
       { formWithErrors: Form[Basket] =>
-        Future(BadRequest(editView(formWithErrors, id)))
+        Future.successful(BadRequest(editView(formWithErrors, id)))
       },
       { data: Basket =>
         repo

@@ -31,7 +31,7 @@ class OrderController @Inject() (
       .validate[Order]
       .fold(
         problems => {
-          Future(BadRequest("Invalid json content"))
+          Future.successful(BadRequest(Json.obj("error" -> "Invalid Json")))
         },
         input => {
           repo
@@ -58,7 +58,7 @@ class OrderController @Inject() (
     val orderResult = request.body.validate[Order]
     orderResult.fold(
       errors => {
-        Future(BadRequest(Json.obj("error" -> "Invalid Json")))
+        Future.successful(BadRequest(Json.obj("error" -> "Invalid Json")))
       },
       orderData => {
         repo

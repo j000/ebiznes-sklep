@@ -34,7 +34,7 @@ class CollectionController @Inject() (
       .body
       .validate[Collection]
       .fold(
-        problems => Future(BadRequest("Invalid json content")),
+        problems => Future.successful(BadRequest(Json.obj("error" -> "Invalid Json"))),
         input => {
           repo
             .save(input.copy(id = None))
@@ -60,7 +60,7 @@ class CollectionController @Inject() (
     val collectionResult = request.body.validate[Collection]
     collectionResult.fold(
       errors => {
-        Future(BadRequest(Json.obj("error" -> "Invalid Json")))
+        Future.successful(BadRequest(Json.obj("error" -> "Invalid Json")))
       },
       collectionData => {
         repo
@@ -103,7 +103,7 @@ class CollectionController @Inject() (
     val formValidationResult = form.bindFromRequest()
     formValidationResult.fold(
       { formWithErrors: Form[Collection] =>
-        Future(BadRequest(editView(formWithErrors)))
+        Future.successful(BadRequest(editView(formWithErrors)))
       },
       { data: Collection =>
         repo
@@ -118,7 +118,7 @@ class CollectionController @Inject() (
 
   def createForm(
   ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
-    Future(Ok(editView(form)))
+    Future.successful(Ok(editView(form)))
   }
 
   def updateForm(
@@ -127,7 +127,7 @@ class CollectionController @Inject() (
     val formValidationResult = form.bindFromRequest()
     formValidationResult.fold(
       { formWithErrors: Form[Collection] =>
-        Future(BadRequest(editView(formWithErrors, id)))
+        Future.successful(BadRequest(editView(formWithErrors, id)))
       },
       { data: Collection =>
         repo

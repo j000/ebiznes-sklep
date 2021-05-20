@@ -31,7 +31,7 @@ class PaymentController @Inject() (
       .validate[Payment]
       .fold(
         problems => {
-          Future(BadRequest("Invalid json content"))
+          Future.successful(BadRequest(Json.obj("error" -> "Invalid Json")))
         },
         input => {
           repo
@@ -58,7 +58,7 @@ class PaymentController @Inject() (
     val paymentResult = request.body.validate[Payment]
     paymentResult.fold(
       errors => {
-        Future(BadRequest(Json.obj("error" -> "Invalid Json")))
+        Future.successful(BadRequest(Json.obj("error" -> "Invalid Json")))
       },
       paymentData => {
         repo

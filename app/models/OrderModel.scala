@@ -12,7 +12,7 @@ import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
 case class Order(user: Long)
-case class Order_helper(order: Long, book: Long, price: Long, count: Long)
+case class OrderHelper(order: Long, book: Long, price: Long, count: Long)
 
 object Orders extends EntityTableModule[Long, Order]("Orders") {
 
@@ -26,7 +26,7 @@ object Orders extends EntityTableModule[Long, Order]("Orders") {
 }
 
 object Orders_helper
-  extends EntityTableModule[Long, Order_helper]("Orders_helper") {
+  extends EntityTableModule[Long, OrderHelper]("Orders_helper") {
 
   class Row(tag: Tag) extends BaseEntRow(tag) with AutoNameSnakify {
     def order = column[Long]("order_id")
@@ -36,7 +36,7 @@ object Orders_helper
 
     def mapping =
       (order, book, price, count) <>
-        ((Order_helper.apply _).tupled, Order_helper.unapply)
+        ((OrderHelper.apply _).tupled, OrderHelper.unapply)
 
   }
 
@@ -83,20 +83,20 @@ object Order {
 
 }
 
-object Order_helper {
-  implicit val _order = Json.format[Order_helper]
+object OrderHelper {
+  implicit val _order = Json.format[OrderHelper]
 
-  implicit val _writes: Writes[KeyedEntity[Long, Order_helper]] =
-    ((JsPath \ "id").write[Long] and (JsPath).write[Order_helper])(
-      unlift(KeyedEntity.unapply[Long, Order_helper]),
+  implicit val _writes: Writes[KeyedEntity[Long, OrderHelper]] =
+    ((JsPath \ "id").write[Long] and (JsPath).write[OrderHelper])(
+      unlift(KeyedEntity.unapply[Long, OrderHelper]),
     )
 
-  implicit val _reads: Reads[KeyedEntity[Long, Order_helper]] =
-    ((JsPath \ "id").read[Long] and (JsPath).read[Order_helper])(
-      KeyedEntity.apply[Long, Order_helper] _,
+  implicit val _reads: Reads[KeyedEntity[Long, OrderHelper]] =
+    ((JsPath \ "id").read[Long] and (JsPath).read[OrderHelper])(
+      KeyedEntity.apply[Long, OrderHelper] _,
     )
 
-  implicit val _format: Format[KeyedEntity[Long, Order_helper]] = Format(
+  implicit val _format: Format[KeyedEntity[Long, OrderHelper]] = Format(
     _reads,
     _writes,
   )

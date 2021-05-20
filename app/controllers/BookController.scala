@@ -38,7 +38,7 @@ class BookController @Inject() (
       .body
       .validate[Book]
       .fold(
-        problems => Future.successful(BadRequest("Invalid json content")),
+        problems => Future.successful(BadRequest(Json.obj("error" -> "Invalid Json"))),
         input => {
           repo
             .save(input.copy(id = None))
