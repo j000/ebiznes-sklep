@@ -1,4 +1,4 @@
-const getRequest = async (url, data, method='GET') => {
+export const getRequest = async (url, data, method='GET') => {
 	const result = await fetch(url, {
 		method,
 		headers: {
@@ -10,6 +10,4 @@ const getRequest = async (url, data, method='GET') => {
 	return result.json();
 };
 
-export {
-	getRequest,
-};
+export default getRequest;

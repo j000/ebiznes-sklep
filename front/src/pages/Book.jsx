@@ -15,10 +15,18 @@ const properties = {
 	price: 'Price',
 };
 
-const propertiesTypes = {
-	author_id: 'number',
-	genre_id: 'number',
-	price: 'number',
+const propertiesAttributes = {
+	author_id: {
+		type: 'number',
+	},
+	genre_id: {
+		type: 'number',
+	},
+	price: {
+		type: 'number',
+		min: 0,
+		step: 0.01,
+	},
 };
 
 const propertiesState = {};
@@ -35,7 +43,7 @@ export default () => {
 			baseTitle={baseTitle}
 			editTitle={editTitle}
 			properties={properties}
-			propertiesTypes={propertiesTypes}
+			propertiesAttributes={propertiesAttributes}
 			propertiesState={propertiesState}
 		/>
 	);

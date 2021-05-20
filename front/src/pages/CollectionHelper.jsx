@@ -13,9 +13,13 @@ const properties = {
 	book_id: 'Book ID',
 };
 
-const propertiesTypes = {
-	collection_id: 'number',
-	book_id: 'number',
+const propertiesAttributes = {
+	collection_id: {
+		type: 'number',
+	},
+	book_id: {
+		type: 'number',
+	},
 };
 
 const propertiesState = {};
@@ -32,7 +36,7 @@ export default () => {
 			baseTitle={baseTitle}
 			editTitle={editTitle}
 			properties={properties}
-			propertiesTypes={propertiesTypes}
+			propertiesAttributes={propertiesAttributes}
 			propertiesState={propertiesState}
 		/>
 	);

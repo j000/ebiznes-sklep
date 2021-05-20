@@ -12,7 +12,7 @@ const properties = {
 	name: 'Name',
 };
 
-const propertiesTypes = {};
+const propertiesAttributes = {};
 
 const propertiesState = {};
 Object.keys(properties).forEach((key) => {
@@ -28,7 +28,7 @@ export default () => {
 			baseTitle={baseTitle}
 			editTitle={editTitle}
 			properties={properties}
-			propertiesTypes={propertiesTypes}
+			propertiesAttributes={propertiesAttributes}
 			propertiesState={propertiesState}
 		/>
 	);

@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { Route, Link, NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 
 const links = {
 	'/author': 'Authors',

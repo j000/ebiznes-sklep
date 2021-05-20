@@ -103,7 +103,7 @@ const EditForm = (props) => {
 									<Field
 										id={key}
 										name={key}
-										type={props.propertiesTypes[key] || 'text'}
+										{...props.propertiesAttributes[key]}
 									/>
 									<ErrorMessage name={key} />
 								</Fragment>
@@ -213,7 +213,7 @@ const ElementTable = (props) => {
 				<EditForm
 					baseUrl={props.baseUrl}
 					properties={props.properties}
-					propertiesTypes={props.propertiesTypes}
+					propertiesAttributes={props.propertiesAttributes}
 					propertiesState={props.propertiesState}
 					callback={fetchData}
 				/>
@@ -231,7 +231,7 @@ const Edit = (props) => {
 			<EditForm
 				baseUrl={props.baseUrl}
 				properties={props.properties}
-				propertiesTypes={props.propertiesTypes}
+				propertiesAttributes={props.propertiesAttributes}
 				propertiesState={props.propertiesState}
 				return={props.path}
 			/>
@@ -261,7 +261,7 @@ export default (props) => {
 					path={path}
 					properties={props.properties}
 					propertiesState={props.propertiesState}
-					propertiesTypes={props.propertiesTypes}
+					propertiesAttributes={props.propertiesAttributes}
 				/>
 			</Route>
 			<Route>
@@ -270,7 +270,7 @@ export default (props) => {
 					baseUrl={props.baseUrl}
 					properties={props.properties}
 					propertiesState={props.propertiesState}
-					propertiesTypes={props.propertiesTypes}
+					propertiesAttributes={props.propertiesAttributes}
 				/>
 			</Route>
 		</Switch>
