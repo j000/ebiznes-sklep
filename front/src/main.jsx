@@ -2,6 +2,7 @@ import React, { lazy, Suspense } from 'react';
 import ReactDOM from 'react-dom';
 import { HashRouter as Router, Switch, Route, useLocation } from 'react-router-dom';
 
+import { ErrorBoundary } from '~/src/utils';
 import LayoutMain from '~/src/LayoutMain';
 import HomePage from '~/src/pages/HomePage';
 
@@ -35,23 +36,27 @@ const NotFound = () => (
 
 const App = () => {
 	return (
-		<Router>
-			<LayoutMain>
-				<Suspense fallback={<Loading />}>
-					<Switch>
-						<Route path="/" exact>
-							<HomePage />
-						</Route>
-						{ Object.entries(pages).map(([key, value]) => (
-								<Route key={key} path={key} component={value} />
-						))}
-						<Route path="*">
-							<NotFound />
-						</Route>
-					</Switch>
-				</Suspense>
-			</LayoutMain>
-		</Router>
+		<ErrorBoundary>
+			<Router>
+				<LayoutMain>
+					<ErrorBoundary>
+						<Suspense fallback={<Loading />}>
+							<Switch>
+								<Route path="/" exact>
+									<HomePage />
+								</Route>
+								{ Object.entries(pages).map(([key, value]) => (
+									<Route key={key} path={key} component={value} />
+								))}
+								<Route path="*">
+									<NotFound />
+								</Route>
+							</Switch>
+						</Suspense>
+					</ErrorBoundary>
+				</LayoutMain>
+			</Router>
+		</ErrorBoundary>
 	);
 }
 
