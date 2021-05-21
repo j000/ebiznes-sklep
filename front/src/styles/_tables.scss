@@ -13,9 +13,15 @@ table.with-buttons {
 	}
 }
 
-td, th {
-	white-space: nowrap;
+tbody tr:hover {
+	background-color: #eee;
+}
 
+th {
+	white-space: nowrap;
+}
+
+td, th {
 	&:first-child {
 		padding-left: 1.5rem;
 	}
@@ -34,10 +40,6 @@ td, th {
 			bottom: 0;
 			left: 0;
 			right: 0;
-
-			&:hover {
-				background-color: #ddd;
-			}
 		}
 	}
 	.button, form.inline {
