@@ -1,6 +1,6 @@
-import React, { lazy, Suspense } from "react";
-import ReactDOM from "react-dom";
-import { HashRouter as Router, Switch, Route } from "react-router-dom";
+import React, { lazy, Suspense } from 'react';
+import ReactDOM from 'react-dom';
+import { HashRouter as Router, Switch, Route, useLocation } from 'react-router-dom';
 
 import LayoutMain from '~/src/LayoutMain';
 import HomePage from '~/src/pages/HomePage';
@@ -24,6 +24,15 @@ const Loading = () => {
 	);
 };
 
+const NotFound = () => (
+	<section className="container">
+		<h1>Not Found</h1>
+		<p>
+			No page exists at <code>{useLocation().pathname}</code>
+		</p>
+	</section>
+);
+
 const App = () => {
 	return (
 		<Router>
@@ -36,10 +45,8 @@ const App = () => {
 						{ Object.entries(pages).map(([key, value]) => (
 								<Route key={key} path={key} component={value} />
 						))}
-						<Route>
-							<section className="container">
-								<h1>Not Found</h1>
-							</section>
+						<Route path="*">
+							<NotFound />
 						</Route>
 					</Switch>
 				</Suspense>
