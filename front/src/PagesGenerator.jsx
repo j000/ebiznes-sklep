@@ -69,9 +69,11 @@ const EditForm = (props) => {
 		};
 	};
 
-	if (id) {
-		useEffect(loadData, []);
-	}
+	useEffect(() => {
+		if (id) {
+			loadData();
+		}
+	}, []);
 
 	return (
 		<>
