@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 
+const linkBase = '/admin';
 const links = {
 	'/author': 'Authors',
 	'/genre': 'Genres',
@@ -34,7 +35,7 @@ export default (props) => {
 							<NavLink
 								className="button button-outline"
 								exact
-								to={key}
+								to={linkBase + key}
 							>
 								{value}
 							</NavLink>

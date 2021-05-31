@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from 'react';
+import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
 import { HashRouter as Router, Switch, Route, useLocation } from 'react-router-dom';
 
@@ -6,16 +6,7 @@ import { ErrorBoundary } from '~/src/utils';
 import LayoutMain from '~/src/LayoutMain';
 import HomePage from '~/src/pages/HomePage';
 
-const pages = {
-	'/author': lazy(() => import('~/src/pages/Author')),
-	'/genre': lazy(() => import('~/src/pages/Genre')),
-	'/book': lazy(() => import('~/src/pages/Book')),
-	'/user': lazy(() => import('~/src/pages/User')),
-	'/review': lazy(() => import('~/src/pages/Review')),
-	'/basket': lazy(() => import('~/src/pages/Basket')),
-	'/collection': lazy(() => import('~/src/pages/Collection')),
-	'/collectionhelper': lazy(() => import('~/src/pages/CollectionHelper')),
-};
+const Admin = React.lazy(() => import('~/src/pages/Admin'));
 
 const Loading = () => {
 	return (
@@ -34,6 +25,15 @@ const NotFound = () => (
 	</section>
 );
 
+const CustomSwitch = ({children}) => (
+	<Switch>
+		{children}
+		<Route>
+			<NotFound />
+		</Route>
+	</Switch>
+);
+
 const App = () => {
 	return (
 		<ErrorBoundary>
@@ -41,17 +41,17 @@ const App = () => {
 				<LayoutMain>
 					<ErrorBoundary>
 						<Suspense fallback={<Loading />}>
-							<Switch>
+							<CustomSwitch>
 								<Route path="/" exact>
 									<HomePage />
 								</Route>
-								{ Object.entries(pages).map(([key, value]) => (
-									<Route key={key} path={key} component={value} />
-								))}
-								<Route path="*">
+								<Route path="/admin/">
+									<Admin switch={CustomSwitch} />
+								</Route>
+								<Route>
 									<NotFound />
 								</Route>
-							</Switch>
+							</CustomSwitch>
 						</Suspense>
 					</ErrorBoundary>
 				</LayoutMain>
