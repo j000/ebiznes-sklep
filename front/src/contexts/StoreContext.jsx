@@ -5,9 +5,9 @@ export const StoreContext = React.createContext();
 
 const endpoint = 'http://localhost:9000/api';
 
-const getAuthors = async () => await loadToMap(endpoint, 'author');
-const getBooks = async () => await loadToMap(endpoint, 'book');
-const getGenres = async () => await loadToMap(endpoint, 'genre');
+const getAuthors = () => loadToMap('author');
+const getBooks = () => loadToMap('book');
+const getGenres = () => loadToMap('genre');
 
 const storeState = {
 	books: {},
