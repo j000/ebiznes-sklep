@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
 
 const linkBase = '/admin';
@@ -11,11 +11,12 @@ const links = {
 	'/basket': 'Baskets',
 	'/collection': 'Collections',
 	'/collectionhelper': 'Collection Helpers',
+	'/order': 'Orders',
 };
 
 export default (props) => {
 	return (
-		<Fragment>
+		<>
 			<header
 				className="container"
 				role="navigation"
@@ -30,17 +31,35 @@ export default (props) => {
 					</h1>
 				</Link>
 				<ul>
-					{ Object.entries(links).map(([key, value]) => (
-						<li key={value}>
-							<NavLink
-								className="button button-outline"
-								exact
-								to={linkBase + key}
-							>
-								{value}
-							</NavLink>
-						</li>
-					))}
+					<li>
+						<NavLink
+							className="button button-outline"
+							to="/books"
+						>
+							Books
+						</NavLink>
+					</li>
+					<li>
+						<a
+							className="button button-outline"
+							tabIndex="0"
+						>
+							Admin &#x25BC;
+						</a>
+						<ul className="dropdown">
+							{ Object.entries(links).map(([key, value]) => (
+								<li key={value}>
+									<NavLink
+										className="button button-outline"
+										exact
+										to={linkBase + key}
+									>
+										{value}
+									</NavLink>
+								</li>
+							))}
+						</ul>
+					</li>
 				</ul>
 			</header>
 			{props.children}
@@ -49,6 +68,6 @@ export default (props) => {
 					Footer here
 				</p>
 			</footer>
-		</Fragment>
+		</>
 	)
 }

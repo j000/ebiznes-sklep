@@ -12,6 +12,7 @@ import Review from './admin/Review';
 import Basket from './admin/Basket';
 import Collection from './admin/Collection';
 import CollectionHelper from './admin/CollectionHelper';
+import Order from './admin/Order';
 
 const pages = {
 	'author': Author,
@@ -22,6 +23,7 @@ const pages = {
 	'basket': Basket,
 	'collection': Collection,
 	'collectionhelper': CollectionHelper,
+	'order': Order,
 };
 
 

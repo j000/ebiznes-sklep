@@ -1,4 +1,4 @@
-import { useState, Component } from "react";
+import React, { useState, Component } from "react";
 
 export const getRequest = async (url, data, method='GET') => {
 	const result = await fetch(url, {
@@ -32,14 +32,14 @@ export class ErrorBoundary extends Component {
 		if (this.state.errorInfo) {
 			// Error path
 			return (
-				<>
+				<section {...this.props}>
 					<h2>Something went wrong.</h2>
 					<details style={{ whiteSpace: 'pre-wrap' }}>
 						{this.state.error && this.state.error.toString()}
 						<br />
 						{this.state.errorInfo.componentStack}
 					</details>
-				</>
+				</section>
 			);
 		}
 		// Normally, just render children
