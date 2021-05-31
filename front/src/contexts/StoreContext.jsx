@@ -1,9 +1,7 @@
 import React from 'react';
-import { getRequest } from '~/src/utils';
+import { loadToMap } from '~/src/utils';
 
 export const StoreContext = React.createContext();
-
-const endpoint = 'http://localhost:9000/api';
 
 const getAuthors = () => loadToMap('author');
 const getBooks = () => loadToMap('book');
@@ -33,14 +31,6 @@ const storeReducer = (state, action) => {
 			throw new Error(`Unhandled action type: ${action.type}`);
 		}
 	}
-};
-
-const loadToMap = async (baseUrl, url) => {
-	const all = await getRequest(`${baseUrl}/${url}`);
-	return all.reduce((map, elem) => {
-		map[elem.id] = elem;
-		return map;
-	}, {});
 };
 
 export const StoreProvider = ({children}) => {

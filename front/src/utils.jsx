@@ -1,5 +1,7 @@
 import React, { useState, Component } from "react";
 
+export const endpoint = 'http://localhost:9000/api';
+
 export const getRequest = async (url, data, method='GET') => {
 	const result = await fetch(url, {
 		method,
@@ -11,6 +13,15 @@ export const getRequest = async (url, data, method='GET') => {
 	});
 	return result.json();
 };
+
+export const loadToMap = async (url) => {
+	const all = await getRequest(`${endpoint}/${url}`);
+	return all.reduce((map, elem) => {
+		map[elem.id] = elem;
+		return map;
+	}, {});
+};
+
 
 // no hooks here...
 export class ErrorBoundary extends Component {
