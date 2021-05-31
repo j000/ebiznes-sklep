@@ -1330,7 +1330,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@parcel/transformer-sass", "npm:2.0.0-beta.3.1"],
             ["@parcel/plugin", "npm:2.0.0-beta.3.1"],
             ["@parcel/source-map", "npm:2.0.0-rc.1.0"],
-            ["sass", "npm:1.34.0"]
+            ["sass", "npm:1.32.13"]
           ],
           "linkType": "HARD",
         }]
@@ -7438,10 +7438,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["sass", [
-        ["npm:1.34.0", {
-          "packageLocation": "./.yarn/cache/sass-npm-1.34.0-0827c919e0-abc3e39a85.zip/node_modules/sass/",
+        ["npm:1.32.13", {
+          "packageLocation": "./.yarn/cache/sass-npm-1.32.13-89da6086e7-93913232ec.zip/node_modules/sass/",
           "packageDependencies": [
-            ["sass", "npm:1.34.0"],
+            ["sass", "npm:1.32.13"],
             ["chokidar", "npm:3.5.1"]
           ],
           "linkType": "HARD",
