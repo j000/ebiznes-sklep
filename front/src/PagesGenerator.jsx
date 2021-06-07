@@ -2,7 +2,7 @@ import React, { Fragment, useState, useEffect } from "react";
 import { useRouteMatch, useParams, useHistory } from "react-router";
 import { Switch, Route, Link } from 'react-router-dom';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
-import { getRequest } from '~/src/utils.jsx';
+import { getRequest } from '~/src/utils';
 
 ////////////////////////////////////////
 

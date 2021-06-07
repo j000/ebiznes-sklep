@@ -1,18 +1,18 @@
 import React from 'react';
-import { loadToMap, loadToMap2 } from '~/src/utils';
+import { loadToMap, loadToMapAlter, loadToMapArray } from '~/src/utils';
 
 const StoreContext = React.createContext();
 
 const getAuthors = () => loadToMap('author');
 const getBooks = () => loadToMap('book');
 const getGenres = () => loadToMap('genre');
-const getCollections = () => loadToMap2(
+const getCollections = () => loadToMapArray(
 	'collection',
 	'collectionhelper',
 	'collection_id',
 	'book_id',
 );
-const getReviews = () => loadToMap('review');
+const getReviews = () => loadToMapAlter('review', 'book_id');
 
 const storeState = {
 	books: {},
@@ -21,6 +21,8 @@ const storeState = {
 	collections: {},
 	reviews: {},
 };
+
+let loading = false;
 
 const storeReducer = (state, action) => {
 	switch (action.type) {
@@ -101,7 +103,8 @@ export const useStore = () => {
 	if (context === undefined) {
 		throw new Error('useStore must be used within a StoreContext');
 	}
-	if (context[0] == storeState) {
+	if (!loading && context[0] == storeState) {
+		loading = true;
 		context[1]({type: 'loadAll'});
 	}
 	return context;

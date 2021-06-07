@@ -5,11 +5,17 @@ const UserContext = React.createContext();
 
 const getFavourites = () => loadToMap('favourite');
 const getBasket = () => loadToMap('basket');
+const getOrders = () => loadToMap('order');
+const getPayment = () => loadToMap('payment');
 
 const userState = {
 	favourites: {},
 	basket: {},
+	orders: {},
+	payments: {},
 };
+
+let loading = false;
 
 const userReducer = (state, action) => {
 	switch (action.type) {
@@ -20,6 +26,14 @@ const userReducer = (state, action) => {
 		case 'setBasket': {
 			console.log('setBasket to ', action.data);
 			return {...state, basket: action.data || {}};
+		}
+		case 'setOrder': {
+			console.log('setOrder to ', action.data);
+			return {...state, order: action.data || {}};
+		}
+		case 'setPayment': {
+			console.log('setPayment to ', action.data);
+			return {...state, payments: action.data || {}};
 		}
 		case 'cleanAll': {
 			console.log('cleanAll');
@@ -38,6 +52,7 @@ export const UserProvider = ({children}) => {
 		switch(action.type) {
 			case "loadAll": {
 				customDispatch({type: 'loadFavourites'});
+				customDispatch({type: 'loadBasket'});
 				return;
 			}
 			case "loadFavourites": {
@@ -46,6 +61,14 @@ export const UserProvider = ({children}) => {
 			}
 			case "loadBasket": {
 				getBasket().then((data) => userDispatch({type: 'setBasket', data}));
+				return;
+			}
+			case "loadOrders": {
+				getOrders().then((data) => userDispatch({type: 'setOrder', data}));
+				return;
+			}
+			case "loadPayments": {
+				getPayment().then((data) => userDispatch({type: 'setPayment', data}));
 				return;
 			}
 			default: {
@@ -66,7 +89,8 @@ export const useUser = () => {
 	if (context === undefined) {
 		throw new Error('useUser must be used within a UserContext');
 	}
-	if (context[0] == userState) {
+	if (!loading && context[0] == userState) {
+		loading = true;
 		context[1]({type: 'loadAll'});
 	}
 	return context;

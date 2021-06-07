@@ -22,13 +22,24 @@ export const loadToMap = async (url) => {
 	}, {});
 };
 
-export const loadToMap2 = async (url, url2, key, key2) => {
+export const loadToMapAlter = async (url, key) => {
+	const all = await getRequest(`${endpoint}/${url}`);
+	return all.reduce((map, elem) => {
+		if (map[elem[key]]) {
+			map[elem[key]].push(elem);
+		} else {
+			map[elem[key]] = [elem];
+		}
+		return map;
+	}, {});
+};
+
+export const loadToMapArray = async (url, url2, key, key2) => {
 	const [data, helper] = await Promise.all([
 		loadToMap(url),
 		getRequest(`${endpoint}/${url2}`),
 	]);
 	return helper.reduce((parent, elem) => {
-		console.log(elem);
 		if (elem[key] && parent[elem[key]]) {
 			if (parent[elem[key]][key2]) {
 				parent[elem[key]][key2].push(elem[key2]);
