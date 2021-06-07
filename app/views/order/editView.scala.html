@@ -1,0 +1,36 @@
+@import models.OrderModel.Order
+@(data: Form[Order], id: Long = 0)(implicit request: MessagesRequestHeader)
+@main("Orders") {
+<div class="container">
+	@if(id > 0) {
+		<h1>Edit order @id</h1>
+	} else {
+		<h1>Create new order</h1>
+	}
+	@* Flash shows updates to a page *@
+	@request.flash.data.map{ case (name, value) =>
+		<div>@name: @value</div>
+	}
+	@* Global errors are not tied to any particular form field *@
+	@if(data.hasGlobalErrors) {
+		@data.globalErrors.map { error: FormError =>
+			<div>
+				@error.key: @error.message
+			</div>
+		}
+	}
+	@form(if (id > 0) {
+		routes.OrderController.updateForm(id)
+	} else {
+		routes.OrderController.saveForm()
+	}) {
+		<fieldset>
+			@CSRF.formField
+			@inputText(data("user_id"), Symbol("_label") -> "User ID")
+			@components.buttons("Update order")
+		</fieldset>
+	}
+	@delete(routes.OrderController.deleteForm(id))
+	<a class="button" href="@routes.OrderController.listForm()">Back</a>
+</div>
+}

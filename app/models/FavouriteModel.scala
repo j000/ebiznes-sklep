@@ -1,75 +1,53 @@
 package models.FavouriteModel
 
-import scala.language.postfixOps
-import models.SlickProfile.api._
-import models.CRUDRepository
-import slick.additions.entity._
-import scala.concurrent.{ ExecutionContext, Future }
-import javax.inject.{ Inject, Singleton }
-import play.api.db.slick.{ DatabaseConfigProvider, HasDatabaseConfig }
-import slick.jdbc.JdbcProfile
+import com.byteslounge.slickrepo.meta.{ Entity, Keyed }
 import play.api.libs.json._
-import play.api.libs.functional.syntax._
 
-case class Favourite(
-  user: Long,
-  book: Option[Long],
-  author: Option[Long],
-  genre: Option[Long],
+case class Favourite(override val id: Option[Long],
+  user_id: Long,
+  book_id: Option[Long],
+  author_id: Option[Long],
+  genre_id: Option[Long],
 )
-
-object Favourites extends EntityTableModule[Long, Favourite]("Favourites") {
-
-  class Row(tag: Tag) extends BaseEntRow(tag) with AutoNameSnakify {
-    def user = column[Long]("user_id")
-    def book = column[Option[Long]]("book_id")
-    def author = column[Option[Long]]("author_id")
-    def genre = column[Option[Long]]("genre_id")
-
-    def mapping =
-      (user, book, author, genre) <>
-        ((Favourite.apply _).tupled, Favourite.unapply) //.mapTo[Favourite]
-  }
-
-}
-
-@Singleton
-class FavouriteRepository @Inject() (
-  dbConfigProvider: DatabaseConfigProvider,
-)(
-  implicit
-  ec: ExecutionContext,
-) extends CRUDRepository[Favourite](Favourites, dbConfigProvider) {
-
-  def update(id: Long, data: Favourite): Future[Option[DBO]] =
-    db run {
-      Favourites.Q.filter(_.key === id).map(_.mapping) update
-        (data) map {
-          case 0 =>
-            None
-          case _ =>
-            Some(SavedEntity[Long, Favourite](id, data))
-        }
-    }
-
+  extends Entity[Favourite, Long] {
+  def withId(id: Long): Favourite = this.copy(id = Some(id))
 }
 
 object Favourite {
   implicit val _favourite = Json.format[Favourite]
+}
 
-  implicit val _writes: Writes[KeyedEntity[Long, Favourite]] =
-    ((JsPath \ "id").write[Long] and (JsPath).write[Favourite])(
-      unlift(KeyedEntity.unapply[Long, Favourite]),
-    )
+import com.byteslounge.slickrepo.meta.Keyed
+import com.byteslounge.slickrepo.repository.Repository
+import javax.inject.{ Inject, Singleton }
+import play.api.db.slick.DatabaseConfigProvider
+import slick.ast.BaseTypedType
+import slick.jdbc.JdbcProfile
+import scala.concurrent.Future
 
-  implicit val _reads: Reads[KeyedEntity[Long, Favourite]] =
-    ((JsPath \ "id").read[Long] and (JsPath).read[Favourite])(
-      KeyedEntity.apply[Long, Favourite] _,
-    )
+@Singleton
+class FavouriteRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)
+  extends Repository[Favourite, Long] {
 
-  implicit val _format: Format[KeyedEntity[Long, Favourite]] = Format(
-    _reads,
-    _writes,
-  )
+  val driver = dbConfigProvider.get[JdbcProfile].profile
+  import driver.api._
+  val pkType = implicitly[BaseTypedType[Long]]
+  val tableQuery = TableQuery[Favourites]
+  type TableType = Favourites
+
+  class Favourites(tag: slick.lifted.Tag)
+    extends Table[Favourite](tag, "Favourites")
+    with Keyed[Long] {
+    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
+    def user_id = column[Long]("user_id")
+    def book_id = column[Option[Long]]("book_id")
+    def author_id = column[Option[Long]]("author_id")
+    def genre_id = column[Option[Long]]("genre_id")
+    def * = (id.?, user_id, book_id, author_id, genre_id) <> ((Favourite.apply _).tupled, Favourite.unapply)
+  }
+
+  def delete(id: Long): DBIO[Int] = {
+    findOneCompiled(id).delete
+  }
 
 }

@@ -1,41 +1,43 @@
 package controllers
 
 import javax.inject._
-import play.api.mvc.{ Action, AnyContent }
-import play.api.mvc.{ ControllerComponents, InjectedController }
+import play.api.mvc._
 import play.api.libs.json._
-import play.api.mvc.Request
 import models.FavouriteModel._
 import scala.concurrent.{ ExecutionContext, Future }
+import play.api.data.Forms._
+import play.api.data.Form
+import utils.DBImplicits
 
 @Singleton
 class FavouriteController @Inject() (
-  val repo: FavouriteRepository,
+  repo: FavouriteRepository,
+  messagesAction: MessagesActionBuilder,
+  dbExecuter: DBImplicits,
 )(
   implicit
   ec: ExecutionContext,
 ) extends InjectedController {
-  type FavouriteDBO = repo.DBO
+  import dbExecuter.executeOperation
+  import views.html.favourite._
 
   def index() = Action.async {
     repo
-      .index()
+      .findAll()
       .map { favourites =>
         Ok(Json.toJson(favourites))
       }
   }
 
-  def create() = Action(parse.json).async { request =>
+  def create() = Action(parse.json).async { implicit request =>
     request
       .body
       .validate[Favourite]
       .fold(
-        problems => {
-          Future.successful(BadRequest(Json.obj("error" -> "Invalid Json")))
-        },
+        problems => Future.successful(BadRequest(Json.obj("error" -> "Invalid Json"))),
         input => {
           repo
-            .create(input)
+            .save(input.copy(id = None))
             .map { favourite =>
               Ok(Json.toJson(favourite))
             }
@@ -45,7 +47,7 @@ class FavouriteController @Inject() (
 
   def read(id: Long) = Action.async {
     repo
-      .read(id)
+      .findOne(id)
       .map {
         case Some(favourite) =>
           Ok(Json.toJson(favourite))
@@ -62,12 +64,9 @@ class FavouriteController @Inject() (
       },
       favouriteData => {
         repo
-          .update(id, favouriteData)
-          .map {
-            case None =>
-              NotFound(Json.obj("error" -> "Not Found"))
-            case favourite =>
-              Ok(Json.toJson(favourite))
+          .update(favouriteData.withId(id))
+          .map { favourite =>
+            Ok(Json.toJson(favourite))
           }
       },
     )
@@ -81,6 +80,91 @@ class FavouriteController @Inject() (
           NotFound(Json.obj("error" -> "Not Found"))
         case _ =>
           Ok(Json.obj("status" -> s"favourite $id deleted"))
+      }
+  }
+
+  val form = Form(
+    mapping(
+      "id" -> ignored(None: Option[Long]),
+      "user_id" -> longNumber,
+      "book_id" -> optional(longNumber),
+      "author_id" -> optional(longNumber),
+      "genre_id" -> optional(longNumber),
+    )(Favourite.apply)(Favourite.unapply),
+  )
+
+  def listForm(
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    repo
+      .findAll()
+      .map { favourites =>
+        Ok(listView(favourites))
+      }
+  }
+
+  def saveForm(
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    val formValidationResult = form.bindFromRequest()
+    formValidationResult.fold(
+      { formWithErrors: Form[Favourite] =>
+        Future.successful(BadRequest(editView(formWithErrors)))
+      },
+      { data: Favourite =>
+        repo
+          .save(data.copy(id = None))
+          .map { _ =>
+            Redirect(routes.FavouriteController.listForm())
+              .flashing("info" -> "Favourite added!")
+          }
+      },
+    )
+  }
+
+  def createForm(
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    Future.successful(Ok(editView(form)))
+  }
+
+  def updateForm(
+    id: Long,
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    val formValidationResult = form.bindFromRequest()
+    formValidationResult.fold(
+      { formWithErrors: Form[Favourite] =>
+        Future.successful(BadRequest(editView(formWithErrors, id)))
+      },
+      { data: Favourite =>
+        repo
+          .update(data.withId(id))
+          .map { _ =>
+            Redirect(routes.FavouriteController.listForm())
+              .flashing("info" -> "Favourite modified!")
+          }
+      },
+    )
+  }
+
+  def editForm(
+    id: Long,
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    repo
+      .findOne(id)
+      .map {
+        case Some(data) =>
+          Ok(editView(form.fill(data), id))
+        case None =>
+          NotFound
+      }
+  }
+
+  def deleteForm(
+    id: Long,
+  ) = Action.async {
+    repo
+      .delete(id)
+      .map { _ =>
+        Redirect(routes.FavouriteController.listForm())
+          .flashing("info" -> "Favourite deleted!")
       }
   }
 

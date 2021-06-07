@@ -1,0 +1,40 @@
+@import models.FavouriteModel.Favourite
+@(favourites: Seq[Favourite])(implicit request: MessagesRequestHeader)
+@main("Favourites") {
+<div class="container">
+	<h1>Favourites</h1>
+	@* Flash shows updates to a page *@
+	@request.flash.data.map{ case (name, value) =>
+		<div>@name: @value</div>
+	}
+	<table class="with-buttons">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>User ID</th>
+				<th>Book ID</th>
+				<th>Author ID</th>
+				<th>Genre ID</th>
+				<th></th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@favourites.map { a =>
+				<tr>
+					<td>@a.id</td>
+					<td>@a.user_id</td>
+					<td>@a.book_id</td>
+					<td>@a.author_id</td>
+					<td>@a.genre_id</td>
+					<td><a class="button" href="@routes.FavouriteController.editForm(a.id.get)">Edit</a></td>
+					<td>
+						@delete(routes.FavouriteController.deleteForm(a.id.get))
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+	<a class="button" href="@routes.FavouriteController.createForm()">New</a>
+</div>
+}

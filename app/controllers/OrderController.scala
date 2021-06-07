@@ -1,41 +1,43 @@
 package controllers
 
 import javax.inject._
-import play.api.mvc.{ Action, AnyContent }
-import play.api.mvc.{ ControllerComponents, InjectedController }
+import play.api.mvc._
 import play.api.libs.json._
-import play.api.mvc.Request
 import models.OrderModel._
 import scala.concurrent.{ ExecutionContext, Future }
+import play.api.data.Forms._
+import play.api.data.Form
+import utils.DBImplicits
 
 @Singleton
 class OrderController @Inject() (
-  val repo: OrderRepository,
+  repo: OrderRepository,
+  messagesAction: MessagesActionBuilder,
+  dbExecuter: DBImplicits,
 )(
   implicit
   ec: ExecutionContext,
 ) extends InjectedController {
-  type OrderDBO = repo.DBO
+  import dbExecuter.executeOperation
+  import views.html.order._
 
   def index() = Action.async {
     repo
-      .index()
+      .findAll()
       .map { orders =>
         Ok(Json.toJson(orders))
       }
   }
 
-  def create() = Action(parse.json).async { request =>
+  def create() = Action(parse.json).async { implicit request =>
     request
       .body
       .validate[Order]
       .fold(
-        problems => {
-          Future.successful(BadRequest(Json.obj("error" -> "Invalid Json")))
-        },
+        problems => Future.successful(BadRequest(Json.obj("error" -> "Invalid Json"))),
         input => {
           repo
-            .create(input)
+            .save(input.copy(id = None))
             .map { order =>
               Ok(Json.toJson(order))
             }
@@ -45,7 +47,7 @@ class OrderController @Inject() (
 
   def read(id: Long) = Action.async {
     repo
-      .read(id)
+      .findOne(id)
       .map {
         case Some(order) =>
           Ok(Json.toJson(order))
@@ -62,12 +64,9 @@ class OrderController @Inject() (
       },
       orderData => {
         repo
-          .update(id, orderData)
-          .map {
-            case None =>
-              NotFound(Json.obj("error" -> "Not Found"))
-            case order =>
-              Ok(Json.toJson(order))
+          .update(orderData.withId(id))
+          .map { order =>
+            Ok(Json.toJson(order))
           }
       },
     )
@@ -81,6 +80,87 @@ class OrderController @Inject() (
           NotFound(Json.obj("error" -> "Not Found"))
         case _ =>
           Ok(Json.obj("status" -> s"order $id deleted"))
+      }
+  }
+
+  val form = Form(
+    mapping("id" -> ignored(None: Option[Long]), "user_id" -> longNumber)(
+      Order.apply,
+    )(Order.unapply),
+  )
+
+  def listForm(
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    repo
+      .findAll()
+      .map { orders =>
+        Ok(listView(orders))
+      }
+  }
+
+  def saveForm(
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    val formValidationResult = form.bindFromRequest()
+    formValidationResult.fold(
+      { formWithErrors: Form[Order] =>
+        Future.successful(BadRequest(editView(formWithErrors)))
+      },
+      { data: Order =>
+        repo
+          .save(data.copy(id = None))
+          .map { _ =>
+            Redirect(routes.OrderController.listForm())
+              .flashing("info" -> "Order added!")
+          }
+      },
+    )
+  }
+
+  def createForm(
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    Future.successful(Ok(editView(form)))
+  }
+
+  def updateForm(
+    id: Long,
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    val formValidationResult = form.bindFromRequest()
+    formValidationResult.fold(
+      { formWithErrors: Form[Order] =>
+        Future.successful(BadRequest(editView(formWithErrors, id)))
+      },
+      { data: Order =>
+        repo
+          .update(data.withId(id))
+          .map { _ =>
+            Redirect(routes.OrderController.listForm())
+              .flashing("info" -> "Order modified!")
+          }
+      },
+    )
+  }
+
+  def editForm(
+    id: Long,
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    repo
+      .findOne(id)
+      .map {
+        case Some(data) =>
+          Ok(editView(form.fill(data), id))
+        case None =>
+          NotFound
+      }
+  }
+
+  def deleteForm(
+    id: Long,
+  ) = Action.async {
+    repo
+      .delete(id)
+      .map { _ =>
+        Redirect(routes.OrderController.listForm())
+          .flashing("info" -> "Order deleted!")
       }
   }
 

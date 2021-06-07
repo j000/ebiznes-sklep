@@ -1,0 +1,34 @@
+@import models.OrderModel.Order
+@(orders: Seq[Order])(implicit request: MessagesRequestHeader)
+@main("Orders") {
+<div class="container">
+	<h1>Orders</h1>
+	@* Flash shows updates to a page *@
+	@request.flash.data.map{ case (name, value) =>
+		<div>@name: @value</div>
+	}
+	<table class="with-buttons">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>User ID</th>
+				<th></th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@orders.map { a =>
+				<tr>
+					<td>@a.id</td>
+					<td>@a.user_id</td>
+					<td><a class="button" href="@routes.OrderController.editForm(a.id.get)">Edit</a></td>
+					<td>
+						@delete(routes.OrderController.deleteForm(a.id.get))
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+	<a class="button" href="@routes.OrderController.createForm()">New</a>
+</div>
+}

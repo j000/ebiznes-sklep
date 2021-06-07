@@ -127,4 +127,18 @@ POST   /collectionhelper/$id<[1-9][0-9]*>        controllers.CollectionHelperCon
 GET    /collectionhelper/$id<[1-9][0-9]*>        controllers.CollectionHelperController.editForm(id: Long)
 POST   /collectionhelper/$id<[1-9][0-9]*>/delete controllers.CollectionHelperController.deleteForm(id: Long)
 
+GET    /order                                    controllers.OrderController.listForm()
+POST   /order/new                                controllers.OrderController.saveForm()
+GET    /order/new                                controllers.OrderController.createForm()
+POST   /order/$id<[1-9][0-9]*>                   controllers.OrderController.updateForm(id: Long)
+GET    /order/$id<[1-9][0-9]*>                   controllers.OrderController.editForm(id: Long)
+POST   /order/$id<[1-9][0-9]*>/delete            controllers.OrderController.deleteForm(id: Long)
+
+GET    /favourite                                controllers.FavouriteController.listForm()
+POST   /favourite/new                            controllers.FavouriteController.saveForm()
+GET    /favourite/new                            controllers.FavouriteController.createForm()
+POST   /favourite/$id<[1-9][0-9]*>               controllers.FavouriteController.updateForm(id: Long)
+GET    /favourite/$id<[1-9][0-9]*>               controllers.FavouriteController.editForm(id: Long)
+POST   /favourite/$id<[1-9][0-9]*>/delete        controllers.FavouriteController.deleteForm(id: Long)
+
 GET    /*file                                    controllers.Assets.at(path="/public", file)
