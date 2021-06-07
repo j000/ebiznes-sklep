@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { HashRouter as Router, Switch, Route, useLocation } from 'react-router-dom';
 
 import { StoreProvider } from '~/src/contexts/StoreContext';
+import { UserProvider } from '~/src/contexts/UserContext';
 import { ErrorBoundary } from '~/src/utils';
 import LayoutMain from '~/src/LayoutMain';
 import HomePage from '~/src/pages/HomePage';
@@ -40,25 +41,27 @@ const App = () => {
 	return (
 		<ErrorBoundary>
 			<StoreProvider>
-				<Router>
-					<LayoutMain>
-						<ErrorBoundary className="container">
-							<React.Suspense fallback={<Loading />}>
-								<CustomSwitch>
-									<Route path="/" exact>
-										<HomePage />
-									</Route>
-									<Route path="/admin/">
-										<Admin switch={CustomSwitch} />
-									</Route>
-									<Route path="/books">
-										<Books />
-									</Route>
-								</CustomSwitch>
-							</React.Suspense>
-						</ErrorBoundary>
-					</LayoutMain>
-				</Router>
+				<UserProvider>
+					<Router>
+						<LayoutMain>
+							<ErrorBoundary className="container">
+								<React.Suspense fallback={<Loading />}>
+									<CustomSwitch>
+										<Route path="/" exact>
+											<HomePage />
+										</Route>
+										<Route path="/admin/">
+											<Admin switch={CustomSwitch} />
+										</Route>
+										<Route path="/books">
+											<Books />
+										</Route>
+									</CustomSwitch>
+								</React.Suspense>
+							</ErrorBoundary>
+						</LayoutMain>
+					</Router>
+				</UserProvider>
 			</StoreProvider>
 		</ErrorBoundary>
 	);
