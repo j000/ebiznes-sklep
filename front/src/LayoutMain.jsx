@@ -1,8 +1,11 @@
 import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
 
-const linkBase = '/admin';
 const links = {
+	'/books': 'Books',
+};
+const adminLinkBase = '/admin';
+const adminLinks = {
 	'/author': 'Authors',
 	'/genre': 'Genres',
 	'/book': 'Books',
@@ -31,14 +34,16 @@ export default (props) => {
 					</h1>
 				</Link>
 				<ul>
-					<li>
-						<NavLink
-							className="button button-outline"
-							to="/books"
-						>
-							Books
-						</NavLink>
-					</li>
+					{ Object.entries(links).map(([link, name]) => (
+						<li key={name}>
+							<NavLink
+								className="button button-outline"
+								to={ link }
+							>
+								{ name }
+							</NavLink>
+						</li>
+					))}
 					<li>
 						<a
 							className="button button-outline"
@@ -47,14 +52,14 @@ export default (props) => {
 							Admin &#x25BC;
 						</a>
 						<ul className="dropdown">
-							{ Object.entries(links).map(([key, value]) => (
-								<li key={value}>
+							{ Object.entries(adminLinks).map(([link, name]) => (
+								<li key={name}>
 									<NavLink
 										className="button button-outline"
 										exact
-										to={linkBase + key}
+										to={adminLinkBase + link}
 									>
-										{value}
+										{name}
 									</NavLink>
 								</li>
 							))}
