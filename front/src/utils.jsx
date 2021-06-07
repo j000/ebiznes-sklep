@@ -22,6 +22,24 @@ export const loadToMap = async (url) => {
 	}, {});
 };
 
+export const loadToMap2 = async (url, url2, key, key2) => {
+	const [data, helper] = await Promise.all([
+		loadToMap(url),
+		getRequest(`${endpoint}/${url2}`),
+	]);
+	return helper.reduce((parent, elem) => {
+		console.log(elem);
+		if (elem[key] && parent[elem[key]]) {
+			if (parent[elem[key]][key2]) {
+				parent[elem[key]][key2].push(elem[key2]);
+			} else {
+				parent[elem[key]][key2] = [elem[key2]];
+			}
+		}
+		return parent;
+	}, data);
+};
+
 
 // no hooks here...
 export class ErrorBoundary extends Component {

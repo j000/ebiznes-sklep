@@ -1,16 +1,25 @@
 import React from 'react';
-import { loadToMap } from '~/src/utils';
+import { loadToMap, loadToMap2 } from '~/src/utils';
 
-export const StoreContext = React.createContext();
+const StoreContext = React.createContext();
 
 const getAuthors = () => loadToMap('author');
 const getBooks = () => loadToMap('book');
 const getGenres = () => loadToMap('genre');
+const getCollections = () => loadToMap2(
+	'collection',
+	'collectionhelper',
+	'collection_id',
+	'book_id',
+);
+const getReviews = () => loadToMap('review');
 
 const storeState = {
 	books: {},
 	authors: {},
 	genres: {},
+	collections: {},
+	reviews: {},
 };
 
 const storeReducer = (state, action) => {
@@ -27,6 +36,14 @@ const storeReducer = (state, action) => {
 			console.log('setGenres to ', action.data);
 			return {...state, genres: action.data || {}};
 		}
+		case 'setCollections': {
+			console.log('setCollections to ', action.data);
+			return {...state, collections: action.data || {}};
+		}
+		case 'setReviews': {
+			console.log('setReviews to ', action.data);
+			return {...state, reviews: action.data || {}};
+		}
 		default: {
 			throw new Error(`Unhandled action type: ${action.type}`);
 		}
@@ -42,6 +59,8 @@ export const StoreProvider = ({children}) => {
 				customDispatch({type: 'loadBooks'});
 				customDispatch({type: 'loadAuthors'});
 				customDispatch({type: 'loadGenres'});
+				customDispatch({type: 'loadCollections'});
+				customDispatch({type: 'loadReviews'});
 				return;
 			}
 			case "loadBooks": {
@@ -54,6 +73,14 @@ export const StoreProvider = ({children}) => {
 			}
 			case "loadGenres": {
 				getGenres().then((data) => storeDispatch({type: 'setGenres', data}));
+				return;
+			}
+			case "loadCollections": {
+				getCollections().then((data) => storeDispatch({type: 'setCollections', data}));
+				return;
+			}
+			case "loadReviews": {
+				getReviews().then((data) => storeDispatch({type: 'setReviews', data}));
 				return;
 			}
 			default: {
