@@ -1,15 +1,20 @@
 import React from 'react';
 import BookList from '~/src/components/BookList';
 import { useStore } from '~/src/contexts/StoreContext';
+import { useUser } from '~/src/contexts/UserContext';
 
 export default () => {
 	const [{
-		books,
-	}, storeDispatch] = useStore();
+		favourites,
+	}, userDispatch] = useUser();
+
+	const list = Object.values(favourites)
+		.filter((fav) => fav.book_id)
+		.map((fav) => fav.book_id)
 
 	return (
 		<section className="container">
-			<BookList list={ Object.values(books).map((book) => book.id) } />
+			<BookList list={ list } />
 		</section>
 	);
 };

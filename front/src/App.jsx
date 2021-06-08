@@ -10,6 +10,7 @@ import HomePage from '~/src/pages/HomePage';
 
 const Admin = React.lazy(() => import('~/src/pages/Admin'));
 const Books = React.lazy(() => import('~/src/pages/Books'));
+const Favourites = React.lazy(() => import('~/src/pages/Favourites'));
 
 const Loading = () => {
 	return (
@@ -55,6 +56,9 @@ const App = () => {
 										</Route>
 										<Route path="/books">
 											<Books />
+										</Route>
+										<Route path="/favourites">
+											<Favourites />
 										</Route>
 									</CustomSwitch>
 								</React.Suspense>

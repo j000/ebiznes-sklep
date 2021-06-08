@@ -2,7 +2,7 @@ import React from 'react';
 import { useStore } from '~/src/contexts/StoreContext';
 import { useUser } from '~/src/contexts/UserContext';
 
-export default () => {
+export default ({ list }) => {
 	const [{
 		books,
 		authors,
@@ -10,6 +10,7 @@ export default () => {
 		reviews,
 	}, storeDispatch] = useStore();
 	const [{
+		favourites,
 	}, userDispatch] = useUser();
 
 	const addToBasket = (id) => {
@@ -18,7 +19,7 @@ export default () => {
 
 	return (<ul>
 		{
-			Object.values(books).map((book) => (
+			Object.values(list).flatMap((id) => books[id] || []).map((book) => (
 				<li key={ book.id }>
 					<q>
 						{ book.title }

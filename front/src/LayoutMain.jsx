@@ -4,6 +4,7 @@ import { TheBasket } from '~/src/components/TheBasket';
 
 const links = {
 	'/books': 'Books',
+	'/favourites': 'Favourites',
 };
 const adminLinkBase = '/admin';
 const adminLinks = {
