@@ -141,4 +141,11 @@ POST   /favourite/$id<[1-9][0-9]*>               controllers.FavouriteController
 GET    /favourite/$id<[1-9][0-9]*>               controllers.FavouriteController.editForm(id: Long)
 POST   /favourite/$id<[1-9][0-9]*>/delete        controllers.FavouriteController.deleteForm(id: Long)
 
+GET    /payment                                  controllers.PaymentController.listForm()
+POST   /payment/new                              controllers.PaymentController.saveForm()
+GET    /payment/new                              controllers.PaymentController.createForm()
+POST   /payment/$id<[1-9][0-9]*>                 controllers.PaymentController.updateForm(id: Long)
+GET    /payment/$id<[1-9][0-9]*>                 controllers.PaymentController.editForm(id: Long)
+POST   /payment/$id<[1-9][0-9]*>/delete          controllers.PaymentController.deleteForm(id: Long)
+
 GET    /*file                                    controllers.Assets.at(path="/public", file)

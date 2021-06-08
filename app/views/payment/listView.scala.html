@@ -1,0 +1,38 @@
+@import models.PaymentModel.Payment
+@(payments: Seq[Payment])(implicit request: MessagesRequestHeader)
+@main("Payments") {
+<div class="container">
+	<h1 id="title">Payments</h1>
+	@* Flash shows updates to a page *@
+	@request.flash.data.map{ case (name, value) =>
+		<div>@name: @value</div>
+	}
+	<table aria-labelledby="title" class="with-buttons">
+		<thead>
+			<tr>
+				<th scope="column">ID</th>
+				<th scope="column">Order ID</th>
+				<th scope="column">Amount</th>
+				<th scope="column">Comment</th>
+				<th scope="column"></th>
+				<th scope="column"></th>
+			</tr>
+		</thead>
+		<tbody>
+			@payments.map { a =>
+				<tr>
+					<td>@a.id</td>
+					<td>@a.order_id</td>
+					<td>@a.amount</td>
+					<td>@a.comment</td>
+					<td><a class="button" href="@routes.PaymentController.editForm(a.id.get)">Edit</a></td>
+					<td>
+						@delete(routes.PaymentController.deleteForm(a.id.get))
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+	<a class="button" href="@routes.PaymentController.createForm()">New</a>
+</div>
+}

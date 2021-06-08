@@ -1,41 +1,43 @@
 package controllers
 
 import javax.inject._
-import play.api.mvc.{ Action, AnyContent }
-import play.api.mvc.{ ControllerComponents, InjectedController }
+import play.api.mvc._
 import play.api.libs.json._
-import play.api.mvc.Request
 import models.PaymentModel._
 import scala.concurrent.{ ExecutionContext, Future }
+import play.api.data.Forms._
+import play.api.data.Form
+import utils.DBImplicits
 
 @Singleton
 class PaymentController @Inject() (
-  val repo: PaymentRepository,
+  repo: PaymentRepository,
+  messagesAction: MessagesActionBuilder,
+  dbExecuter: DBImplicits,
 )(
   implicit
   ec: ExecutionContext,
 ) extends InjectedController {
-  type PaymentDBO = repo.DBO
+  import dbExecuter.executeOperation
+  import views.html.payment._
 
   def index() = Action.async {
     repo
-      .index()
+      .findAll()
       .map { payments =>
         Ok(Json.toJson(payments))
       }
   }
 
-  def create() = Action(parse.json).async { request =>
+  def create() = Action(parse.json).async { implicit request =>
     request
       .body
       .validate[Payment]
       .fold(
-        problems => {
-          Future.successful(BadRequest(Json.obj("error" -> "Invalid Json")))
-        },
+        problems => Future.successful(BadRequest(Json.obj("error" -> "Invalid Json"))),
         input => {
           repo
-            .create(input)
+            .save(input.copy(id = None))
             .map { payment =>
               Ok(Json.toJson(payment))
             }
@@ -45,7 +47,7 @@ class PaymentController @Inject() (
 
   def read(id: Long) = Action.async {
     repo
-      .read(id)
+      .findOne(id)
       .map {
         case Some(payment) =>
           Ok(Json.toJson(payment))
@@ -62,12 +64,9 @@ class PaymentController @Inject() (
       },
       paymentData => {
         repo
-          .update(id, paymentData)
-          .map {
-            case None =>
-              NotFound(Json.obj("error" -> "Not Found"))
-            case payment =>
-              Ok(Json.toJson(payment))
+          .update(paymentData.withId(id))
+          .map { payment =>
+            Ok(Json.toJson(payment))
           }
       },
     )
@@ -81,6 +80,92 @@ class PaymentController @Inject() (
           NotFound(Json.obj("error" -> "Not Found"))
         case _ =>
           Ok(Json.obj("status" -> s"payment $id deleted"))
+      }
+  }
+
+  val form = Form(
+    mapping(
+      "id" -> ignored(None: Option[Long]),
+      "order_id" -> longNumber,
+      "amount" -> longNumber,
+      "comment" -> optional(text),
+    )(
+      Payment.apply,
+    )(Payment.unapply),
+  )
+
+  def listForm(
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    repo
+      .findAll()
+      .map { payments =>
+        Ok(listView(payments))
+      }
+  }
+
+  def saveForm(
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    val formValidationResult = form.bindFromRequest()
+    formValidationResult.fold(
+      { formWithErrors: Form[Payment] =>
+        Future.successful(BadRequest(editView(formWithErrors)))
+      },
+      { data: Payment =>
+        repo
+          .save(data.copy(id = None))
+          .map { _ =>
+            Redirect(routes.PaymentController.listForm())
+              .flashing("info" -> "Payment added!")
+          }
+      },
+    )
+  }
+
+  def createForm(
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    Future.successful(Ok(editView(form)))
+  }
+
+  def updateForm(
+    id: Long,
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    val formValidationResult = form.bindFromRequest()
+    formValidationResult.fold(
+      { formWithErrors: Form[Payment] =>
+        Future.successful(BadRequest(editView(formWithErrors, id)))
+      },
+      { data: Payment =>
+        repo
+          .update(data.withId(id))
+          .map { _ =>
+            Redirect(routes.PaymentController.listForm())
+              .flashing("info" -> "Payment modified!")
+          }
+      },
+    )
+  }
+
+  def editForm(
+    id: Long,
+  ) = messagesAction.async { implicit request: MessagesRequest[AnyContent] =>
+    repo
+      .findOne(id)
+      .map {
+        case Some(data) =>
+          Ok(editView(form.fill(data), id))
+        case None =>
+          NotFound
+      }
+  }
+
+  def deleteForm(
+    id: Long,
+  ) = Action.async {
+    repo
+      .delete(id)
+      .map { _ =>
+        Redirect(routes.PaymentController.listForm())
+          .flashing("info" -> "Payment deleted!")
       }
   }
 

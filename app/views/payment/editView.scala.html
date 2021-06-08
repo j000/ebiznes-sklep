@@ -1,0 +1,39 @@
+@import models.PaymentModel.Payment
+@(data: Form[Payment], id: Long = 0)(implicit request: MessagesRequestHeader)
+@main("Payments") {
+<div class="container">
+	@if(id > 0) {
+		<h1>Edit payment @id</h1>
+	} else {
+		<h1>Create new payment</h1>
+	}
+	@* Flash shows updates to a page *@
+	@request.flash.data.map{ case (name, value) =>
+		<div>@name: @value</div>
+	}
+	@* Global errors are not tied to any particular form field *@
+	@if(data.hasGlobalErrors) {
+		@data.globalErrors.map { error: FormError =>
+			<div>
+				@error.key: @error.message
+			</div>
+		}
+	}
+	@form(if (id > 0) {
+		routes.PaymentController.updateForm(id)
+	} else {
+		routes.PaymentController.saveForm()
+	}) {
+		<fieldset>
+			<legend>Payment</legend>
+			@CSRF.formField
+			@inputText(data("order_id"), Symbol("_label") -> "Order ID")
+			@inputText(data("amount"), Symbol("_label") -> "Amount")
+			@inputText(data("comment"), Symbol("_label") -> "Comment")
+			@components.buttons("Update payment")
+		</fieldset>
+	}
+	@delete(routes.PaymentController.deleteForm(id))
+	<a class="button" href="@routes.PaymentController.listForm()">Back</a>
+</div>
+}
