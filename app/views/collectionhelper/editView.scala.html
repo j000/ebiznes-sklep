@@ -25,6 +25,7 @@
 		routes.CollectionHelperController.saveForm()
 	}) {
 		<fieldset>
+			<legend>CollectionHelper</legend>
 			@CSRF.formField
 			@inputText(data("collection_id"), Symbol("_label") -> "Collection ID")
 			@inputText(data("book_id"), Symbol("_label") -> "Book ID")

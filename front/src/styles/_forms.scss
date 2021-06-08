@@ -4,6 +4,10 @@ fieldset {
 		vertical-align: center;
 	}
 
+	legend {
+		display: none;
+	}
+
 	.error {
 		color: $red;
 		font-weight: bold;

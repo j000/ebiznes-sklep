@@ -2,19 +2,19 @@
 @(users: Seq[User])(implicit request: MessagesRequestHeader)
 @main("Users") {
 <div class="container">
-	<h1>Users</h1>
+	<h1 id="title">Users</h1>
 	@* Flash shows updates to a page *@
 	@request.flash.data.map{ case (name, value) =>
 		<div>@name: @value</div>
 	}
-	<table class="with-buttons">
+	<table aria-labelledby="title" class="with-buttons">
 		<thead>
 			<tr>
-				<th>ID</th>
-				<th>Login</th>
-				<th>Password</th>
-				<th></th>
-				<th></th>
+				<th scope="column">ID</th>
+				<th scope="column">Login</th>
+				<th scope="column">Password</th>
+				<th scope="column"></th>
+				<th scope="column"></th>
 			</tr>
 		</thead>
 		<tbody>

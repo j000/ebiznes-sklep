@@ -25,6 +25,7 @@
 		routes.CollectionController.saveForm()
 	}) {
 		<fieldset>
+			<legend>Collection</legend>
 			@CSRF.formField
 			@inputText(data("name"), Symbol("_label") -> "Name")
 			@components.buttons("Update collection")

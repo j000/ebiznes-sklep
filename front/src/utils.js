@@ -95,7 +95,7 @@ export const priceInput = (initialValue) => {
 		setValue,
 		reset: () => setValue(initialValue),
 		bind: {
-			value: () => { value / 100 },
+			value: () => ( value / 100 ),
 			onChange: (event) => {
 				setValue(Math.ceil(event.target.value * 100));
 			},

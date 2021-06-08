@@ -25,6 +25,7 @@
 		routes.ReviewController.saveForm()
 	}) {
 		<fieldset>
+			<legend>Review</legend>
 			@CSRF.formField
 			@inputText(data("content"), Symbol("_label") -> "Review")
 			@inputText(data("user_id"), Symbol("_label") -> "User ID")

@@ -25,6 +25,7 @@
 		routes.AuthorController.saveForm()
 	}) {
 		<fieldset>
+			<legend>Author</legend>
 			@CSRF.formField
 			@inputText(data("name"), Symbol("_label") -> "Name")
 			@components.buttons("Update author")

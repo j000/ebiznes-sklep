@@ -2,19 +2,19 @@
 @(collectionhelpers: Seq[CollectionHelper])(implicit request: MessagesRequestHeader)
 @main("CollectionHelpers") {
 <div class="container">
-	<h1>CollectionHelpers</h1>
+	<h1 id="title">CollectionHelpers</h1>
 	@* Flash shows updates to a page *@
 	@request.flash.data.map{ case (name, value) =>
 		<div>@name: @value</div>
 	}
-	<table class="with-buttons">
+	<table aria-labelledby="title" class="with-buttons">
 		<thead>
 			<tr>
-				<th>ID</th>
-				<th>Collection ID</th>
-				<th>Book ID</th>
-				<th></th>
-				<th></th>
+				<th scope="column">ID</th>
+				<th scope="column">Collection ID</th>
+				<th scope="column">Book ID</th>
+				<th scope="column"></th>
+				<th scope="column"></th>
 			</tr>
 		</thead>
 		<tbody>

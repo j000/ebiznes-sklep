@@ -25,6 +25,7 @@
 		routes.OrderController.saveForm()
 	}) {
 		<fieldset>
+			<legend>Order</legend>
 			@CSRF.formField
 			@inputText(data("user_id"), Symbol("_label") -> "User ID")
 			@components.buttons("Update order")

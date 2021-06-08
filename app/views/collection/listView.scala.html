@@ -2,18 +2,18 @@
 @(collections: Seq[Collection])(implicit request: MessagesRequestHeader)
 @main("Collections") {
 <div class="container">
-	<h1>Collections</h1>
+	<h1 id="title">Collections</h1>
 	@* Flash shows updates to a page *@
 	@request.flash.data.map{ case (name, value) =>
 		<div>@name: @value</div>
 	}
-	<table class="with-buttons">
+	<table aria-labelledby="title" class="with-buttons">
 		<thead>
 			<tr>
-				<th>ID</th>
-				<th>Name</th>
-				<th></th>
-				<th></th>
+				<th scope="column">ID</th>
+				<th scope="column">Name</th>
+				<th scope="column"></th>
+				<th scope="column"></th>
 			</tr>
 		</thead>
 		<tbody>

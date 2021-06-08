@@ -25,6 +25,7 @@
 		routes.GenreController.saveForm()
 	}) {
 		<fieldset>
+			<legend>Genre</legend>
 			@CSRF.formField
 			@inputText(data("name"), Symbol("_label") -> "Name")
 			@components.buttons("Update genre")

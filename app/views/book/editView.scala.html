@@ -25,6 +25,7 @@
 		routes.BookController.saveForm()
 	}) {
 		<fieldset>
+			<legend>Book</legend>
 			@CSRF.formField
 			@inputText(data("title"), Symbol("_label") -> "Title")
 			@select(data("author_id"),

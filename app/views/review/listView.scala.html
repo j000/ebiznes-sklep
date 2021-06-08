@@ -2,20 +2,20 @@
 @(reviews: Seq[Review])(implicit request: MessagesRequestHeader)
 @main("Reviews") {
 <div class="container">
-	<h1>Reviews</h1>
+	<h1 id="title">Reviews</h1>
 	@* Flash shows updates to a page *@
 	@request.flash.data.map{ case (content, value) =>
 		<div>@content: @value</div>
 	}
-	<table class="with-buttons">
+	<table aria-labelledby="title" class="with-buttons">
 		<thead>
 			<tr>
-				<th>ID</th>
-				<th>Content</th>
-				<th>User ID</th>
-				<th>Book ID</th>
-				<th></th>
-				<th></th>
+				<th scope="column">ID</th>
+				<th scope="column">Content</th>
+				<th scope="column">User ID</th>
+				<th scope="column">Book ID</th>
+				<th scope="column"></th>
+				<th scope="column"></th>
 			</tr>
 		</thead>
 		<tbody>

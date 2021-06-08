@@ -25,6 +25,7 @@
 		routes.FavouriteController.saveForm()
 	}) {
 		<fieldset>
+			<legend>Favourite</legend>
 			@CSRF.formField
 			@inputText(data("user_id"), Symbol("_label") -> "User ID")
 			@inputText(data("book_id"), Symbol("_label") -> "Book ID")

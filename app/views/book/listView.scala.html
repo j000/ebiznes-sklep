@@ -2,21 +2,21 @@
 @(books: Seq[Book])(implicit request: MessagesRequestHeader)
 @main("Books") {
 <div class="container">
-	<h1>Books</h1>
+	<h1 id="title">Books</h1>
 	@* Flash shows updates to a page *@
 	@request.flash.data.map{ case (name, value) =>
 		<div>@name: @value</div>
 	}
-	<table class="with-buttons">
+	<table aria-labelledby="title" class="with-buttons">
 		<thead>
 			<tr>
-				<th>ID</th>
-				<th>Title</th>
-				<th>Author</th>
-				<th>Genre</th>
-				<th>Price</th>
-				<th></th>
-				<th></th>
+				<th scope="column">ID</th>
+				<th scope="column">Title</th>
+				<th scope="column">Author</th>
+				<th scope="column">Genre</th>
+				<th scope="column">Price</th>
+				<th scope="column"></th>
+				<th scope="column"></th>
 			</tr>
 		</thead>
 		<tbody>

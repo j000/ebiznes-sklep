@@ -2,21 +2,21 @@
 @(favourites: Seq[Favourite])(implicit request: MessagesRequestHeader)
 @main("Favourites") {
 <div class="container">
-	<h1>Favourites</h1>
+	<h1 id="title">Favourites</h1>
 	@* Flash shows updates to a page *@
 	@request.flash.data.map{ case (name, value) =>
 		<div>@name: @value</div>
 	}
-	<table class="with-buttons">
+	<table aria-labelledby="title" class="with-buttons">
 		<thead>
 			<tr>
-				<th>ID</th>
-				<th>User ID</th>
-				<th>Book ID</th>
-				<th>Author ID</th>
-				<th>Genre ID</th>
-				<th></th>
-				<th></th>
+				<th scope="column">ID</th>
+				<th scope="column">User ID</th>
+				<th scope="column">Book ID</th>
+				<th scope="column">Author ID</th>
+				<th scope="column">Genre ID</th>
+				<th scope="column"></th>
+				<th scope="column"></th>
 			</tr>
 		</thead>
 		<tbody>
