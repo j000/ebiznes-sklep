@@ -1,6 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import { HashRouter as Router, Route, useLocation } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 import { useRouteMatch } from "react-router";
 import { ErrorBoundary } from '~/src/utils';
 
@@ -28,7 +27,7 @@ const pages = {
 
 
 export default ({switch: CustomSwitch}) => {
-	let { path } = useRouteMatch();
+	const { path } = useRouteMatch();
 
 	return (
 		<ErrorBoundary className="container">

@@ -20,10 +20,8 @@ const DeleteForm = (props) => {
 
 				(async (setIsSubmitting) => {
 					await getRequest(`${props.baseUrl}/${props.id}`, undefined, 'DELETE');
-					if (props.return)
-						history.push(props.return);
-					if (props.callback)
-						props.callback();
+					if (props.return) history.push(props.return);
+					if (props.callback) props.callback();
 					setIsSubmitting(false);
 				})(setSubmitting);
 			}}
@@ -173,7 +171,9 @@ const ElementTable = (props) => {
 	useEffect(() => {
 		fetchData();
 
-		return () => { ignore = true };
+		return () => {
+			ignore = true
+		};
 	}, []);
 
 	return (
@@ -252,7 +252,7 @@ const Edit = (props) => {
 };
 
 export default (props) => {
-	let { path } = useRouteMatch();
+	const { path } = useRouteMatch();
 
 	return (
 		<Switch>

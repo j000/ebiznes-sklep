@@ -112,7 +112,7 @@ export const useUser = () => {
 	if (context === undefined) {
 		throw new Error('useUser must be used within a UserContext');
 	}
-	if (!loading && context[0] == userState) {
+	if (!loading && context[0] === userState) {
 		loading = true;
 		context[1]({type: 'loadAll'});
 	}

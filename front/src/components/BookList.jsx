@@ -8,10 +8,8 @@ export default ({ list }) => {
 		authors,
 		genres,
 		reviews,
-	}, storeDispatch] = useStore();
-	const [{
-		favourites,
-	}, userDispatch] = useUser();
+	}, ] = useStore();
+	const [, userDispatch] = useUser();
 
 	const addToBasket = (id) => {
 		userDispatch({ type: 'addToBasket', book_id: id });

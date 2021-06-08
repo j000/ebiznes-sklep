@@ -57,7 +57,7 @@ export class ErrorBoundary extends Component {
 	constructor(props) {
 		super(props);
 		this.state = { error: null, errorInfo: null };
-	};
+	}
 
 	componentDidCatch(error, errorInfo) {
 		// Catch errors in any components below and re-render with error message
@@ -66,7 +66,7 @@ export class ErrorBoundary extends Component {
 			errorInfo: errorInfo
 		});
 		// You can also log error messages to an error reporting service here
-	};
+	}
 
 	render() {
 		if (this.state.errorInfo) {
@@ -84,8 +84,8 @@ export class ErrorBoundary extends Component {
 		}
 		// Normally, just render children
 		return this.props.children;
-	};
-};
+	}
+}
 
 export const priceInput = (initialValue) => {
 	const [value, setValue] = useState(initialValue);

@@ -103,7 +103,7 @@ export const useStore = () => {
 	if (context === undefined) {
 		throw new Error('useStore must be used within a StoreContext');
 	}
-	if (!loading && context[0] == storeState) {
+	if (!loading && context[0] === storeState) {
 		loading = true;
 		context[1]({type: 'loadAll'});
 	}
