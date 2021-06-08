@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
+import { TheBasket } from '~/src/components/TheBasket';
 
 const links = {
 	'/books': 'Books',
@@ -44,6 +45,9 @@ export default (props) => {
 							</NavLink>
 						</li>
 					))}
+					<li>
+						<TheBasket />
+					</li>
 					<li>
 						<a
 							className="button button-outline"

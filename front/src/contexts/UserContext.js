@@ -35,6 +35,29 @@ const userReducer = (state, action) => {
 			console.log('setPayment to ', action.data);
 			return {...state, payments: action.data || {}};
 		}
+		case 'addToBasket': {
+			console.log('addToBasket ', action.book_id);
+			const newState = {...state};
+			const { book_id } = action;
+			if (!newState.basket[book_id]) {
+				newState.basket[book_id] = 1;
+			} else {
+				newState.basket[book_id] += 1;
+			}
+			return newState;
+		}
+		case 'removeFromBasket': {
+			console.log('removeFromBasket ', action.book_id);
+			const newState = {...state};
+			const { book_id } = action;
+
+			if (newState.basket[book_id] > 1) {
+				newState.basket[book_id] -= 1;
+			} else {
+				delete newState.basket[book_id];
+			}
+			return newState;
+		}
 		case 'cleanAll': {
 			console.log('cleanAll');
 			return {...userState};
@@ -52,7 +75,7 @@ export const UserProvider = ({children}) => {
 		switch(action.type) {
 			case "loadAll": {
 				customDispatch({type: 'loadFavourites'});
-				customDispatch({type: 'loadBasket'});
+				// customDispatch({type: 'loadBasket'}); // TODO: sync with basket on the server
 				return;
 			}
 			case "loadFavourites": {
