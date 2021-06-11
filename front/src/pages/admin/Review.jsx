@@ -3,7 +3,7 @@ import PagesGenerator from '~/src/PagesGenerator.jsx';
 
 ////////////////////////////////////////
 
-const baseUrl = 'http://localhost:9000/api/review';
+const baseUrl = 'review';
 
 const baseTitle = 'Reviews';
 const editTitle = 'Edit review';

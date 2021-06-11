@@ -1,8 +1,16 @@
 import React, { useState, Component } from "react";
 
-export const endpoint = 'http://localhost:9000/api';
+export const endpoint = (
+	["", "80", "443"].includes(window.location.port)
+	? '/api'
+	: 'http://localhost:9000/api'
+);
 
 export const getRequest = async (url, data, method='GET') => {
+	console.log(window.location.port);
+	if (!url.startsWith('http')) {
+		url = `${endpoint}/${url}`;
+	}
 	const result = await fetch(url, {
 		method,
 		headers: {
@@ -15,7 +23,7 @@ export const getRequest = async (url, data, method='GET') => {
 };
 
 export const loadToMap = async (url) => {
-	const all = await getRequest(`${endpoint}/${url}`);
+	const all = await getRequest(url);
 	return all.reduce((map, elem) => {
 		map[elem.id] = elem;
 		return map;
@@ -23,7 +31,7 @@ export const loadToMap = async (url) => {
 };
 
 export const loadToMapAlter = async (url, key) => {
-	const all = await getRequest(`${endpoint}/${url}`);
+	const all = await getRequest(url);
 	return all.reduce((map, elem) => {
 		if (map[elem[key]]) {
 			map[elem[key]].push(elem);
@@ -37,7 +45,7 @@ export const loadToMapAlter = async (url, key) => {
 export const loadToMapArray = async (url, url2, key, key2) => {
 	const [data, helper] = await Promise.all([
 		loadToMap(url),
-		getRequest(`${endpoint}/${url2}`),
+		getRequest(url2),
 	]);
 	return helper.reduce((parent, elem) => {
 		if (elem[key] && parent[elem[key]]) {

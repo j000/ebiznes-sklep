@@ -3,7 +3,7 @@ import PagesGenerator from '~/src/PagesGenerator.jsx';
 
 ////////////////////////////////////////
 
-const baseUrl = 'http://localhost:9000/api/basket';
+const baseUrl = 'basket';
 
 const baseTitle = 'Baskets';
 const editTitle = 'Edit basket';

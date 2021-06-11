@@ -3,7 +3,7 @@ import PagesGenerator from '~/src/PagesGenerator.jsx';
 
 ////////////////////////////////////////
 
-const baseUrl = 'http://localhost:9000/api/genre';
+const baseUrl = 'genre';
 
 const baseTitle = 'Genre';
 const editTitle = 'Edit genre';

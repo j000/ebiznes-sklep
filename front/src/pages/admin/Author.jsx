@@ -3,7 +3,7 @@ import PagesGenerator from '~/src/PagesGenerator.jsx';
 
 ////////////////////////////////////////
 
-const baseUrl = 'http://localhost:9000/api/author';
+const baseUrl = 'author';
 
 const baseTitle = 'Author';
 const editTitle = 'Edit author';

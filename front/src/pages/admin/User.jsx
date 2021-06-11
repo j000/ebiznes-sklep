@@ -3,7 +3,7 @@ import PagesGenerator from '~/src/PagesGenerator.jsx';
 
 ////////////////////////////////////////
 
-const baseUrl = 'http://localhost:9000/api/user';
+const baseUrl = 'user';
 
 const baseTitle = 'Users';
 const editTitle = 'Edit user';

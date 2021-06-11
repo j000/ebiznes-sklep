@@ -66,23 +66,58 @@ export const StoreProvider = ({children}) => {
 				return;
 			}
 			case "loadBooks": {
-				getBooks().then((data) => storeDispatch({type: 'setBooks', data}));
+				getBooks()
+					.then((data) => storeDispatch({type: 'setBooks', data}))
+					.catch((e) => {
+						setTimeout(() => {
+							loading = false;
+						}, 2000);
+						console.log(e);
+					});
 				return;
 			}
 			case "loadAuthors": {
-				getAuthors().then((data) => storeDispatch({type: 'setAuthors', data}));
+				getAuthors()
+					.then((data) => storeDispatch({type: 'setAuthors', data}))
+					.catch((e) => {
+						setTimeout(() => {
+							loading = false;
+						}, 2000);
+						console.log(e);
+					});
 				return;
 			}
 			case "loadGenres": {
-				getGenres().then((data) => storeDispatch({type: 'setGenres', data}));
+				getGenres()
+					.then((data) => storeDispatch({type: 'setGenres', data}))
+					.catch((e) => {
+						setTimeout(() => {
+							loading = false;
+						}, 2000);
+						console.log(e);
+					});
 				return;
 			}
 			case "loadCollections": {
-				getCollections().then((data) => storeDispatch({type: 'setCollections', data}));
+				getCollections()
+					.then((data) => storeDispatch({type: 'setCollections', data}))
+					.catch((e) => {
+						setTimeout(() => {
+							loading = false;
+						}, 2000);
+						console.log(e);
+					});
 				return;
 			}
 			case "loadReviews": {
-				getReviews().then((data) => storeDispatch({type: 'setReviews', data}));
+				getReviews()
+					.then((data) => storeDispatch({type: 'setReviews', data}))
+					.catch((e) => {
+						setTimeout(() => {
+							loading = false;
+						}, 2000);
+						console.log(e);
+					});
 				return;
 			}
 			default: {

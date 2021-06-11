@@ -3,7 +3,7 @@ import PagesGenerator from '~/src/PagesGenerator.jsx';
 
 ////////////////////////////////////////
 
-const baseUrl = 'http://localhost:9000/api/order';
+const baseUrl = 'order';
 
 const baseTitle = 'Orders';
 const editTitle = 'Edit order';

@@ -3,7 +3,7 @@ import PagesGenerator from '~/src/PagesGenerator.jsx';
 
 ////////////////////////////////////////
 
-const baseUrl = 'http://localhost:9000/api/collectionhelper';
+const baseUrl = 'collectionhelper';
 
 const baseTitle = 'Collection Helpers';
 const editTitle = 'Edit collection helper';
