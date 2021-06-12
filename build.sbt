@@ -34,3 +34,16 @@ Compile / doc / sources := Seq.empty
 Compile / packageDoc / publishArtifact := false
 // auto-reload
 Global / onChangedBuildSource := ReloadOnSourceChanges
+
+ThisBuild / assemblyMergeStrategy := {
+	// case PathList("javax", "servlet", xs @ _*) => MergeStrategy.first
+	// case PathList(ps @ _*) if ps.last endsWith ".html" => MergeStrategy.first
+	// case "application.conf" => MergeStrategy.concat
+	// case "unwanted.txt" => MergeStrategy.discard
+	case "messages" => MergeStrategy.concat
+	case "play/reference-overrides.conf" => MergeStrategy.concat
+	case "module-info.class" => MergeStrategy.discard
+	case x =>
+		val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
+		oldStrategy(x)
+}

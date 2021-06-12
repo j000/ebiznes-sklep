@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2021-06-12T09:35:49Z"
+  labels:
+    app: sklep
+  name: sklep
+spec:
+  containers:
+  - image: localhost/ebiznes-sklep:front-end
+    name: ebiznes-sklep-front
+    ports:
+    - containerPort: 80
+      hostPort: 80
+      protocol: TCP
+  - image: localhost/ebiznes-sklep:back-end
+    name: ebiznes-sklep-back
+    volumeMounts:
+    - mountPath: /home/nonroot/db.sqlite
+      name: database.volume
+  volumes:
+  - hostPath:
+      path: /home/j000/Uczelnia/ebiznes/zadania/sklep/db.sqlite
+      type: File
+    name: database.volume
+status: {}
+

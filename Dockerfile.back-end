@@ -1,0 +1,18 @@
+FROM docker.io/j000/ebiznes:sbt as back-end-builder
+RUN ["mkdir", "-p", "./project"]
+COPY build.sbt .
+COPY project/plugins.sbt project/build.properties ./project/
+COPY app ./app/
+COPY conf ./conf/
+COPY styles/ ./app/assets/styles/
+RUN ["sbt", "clean", "stage"]
+
+FROM gcr.io/distroless/java:8 as back-end
+USER nonroot
+WORKDIR /home/nonroot
+# COPY --chown=nonroot --from=back-end-builder /home/app/project/target/scala-2.13/sklep-assembly-1.0-SNAPSHOT.jar ./sklep.jar
+COPY --from=back-end-builder /home/app/project/target/universal/stage/ ./
+CMD ["ls", "-al"]
+EXPOSE 9000
+ENTRYPOINT ["java"]
+CMD ["-Duser.dir=/home/nonroot", "-cp", "conf/:lib/*", "play.core.server.ProdServerStart"]
