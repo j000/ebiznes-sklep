@@ -1,6 +1,6 @@
 package controllers
 
-import javax.inject._
+import javax.inject.{ Inject, Singleton }
 import play.api.mvc._
 import play.api.libs.json._
 import models.ReviewModel._
@@ -14,12 +14,12 @@ import utils.DBImplicits
 class ReviewController @Inject() (
   repo: ReviewRepository,
   messagesAction: MessagesActionBuilder,
-  dbExecuter: DBImplicits,
+  dbExecutor: DBImplicits,
 )(
   implicit
   ec: ExecutionContext,
 ) extends InjectedController {
-  import dbExecuter.executeOperation
+  import dbExecutor.executeOperation
   import views.html.review._
 
   def index() = Action.async {

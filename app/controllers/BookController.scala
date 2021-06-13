@@ -1,6 +1,6 @@
 package controllers
 
-import javax.inject._
+import javax.inject.{ Inject, Singleton }
 import play.api.mvc._
 import play.api.libs.json._
 import models.BookModel._
@@ -15,14 +15,14 @@ import utils.DBImplicits
 class BookController @Inject() (
   repo: BookRepository,
   messagesAction: MessagesActionBuilder,
-  dbExecuter: DBImplicits,
+  dbExecutor: DBImplicits,
   authorRepo: AuthorRepository,
   genreRepo: GenreRepository,
 )(
   implicit
   ec: ExecutionContext,
 ) extends InjectedController {
-  import dbExecuter.executeOperation
+  import dbExecutor.executeOperation
   import views.html.book._
 
   def index() = Action.async {
