@@ -16,12 +16,11 @@ spec:
   - image: localhost/ebiznes-sklep:back-end
     name: ebiznes-sklep-back
     volumeMounts:
-    - mountPath: /home/nonroot/db.sqlite
-      name: database.volume
+    - mountPath: /home/nonroot/data/
+      name: persistence
   volumes:
   - hostPath:
-      path: /home/j000/Uczelnia/ebiznes/zadania/sklep/db.sqlite
-      type: File
-    name: database.volume
+      path: /home/j000/Uczelnia/ebiznes/zadania/sklep/data/
+    name: persistence
 status: {}
 
