@@ -1,9 +1,9 @@
 #!/bin/sh
 DIR=$(dirname -- "$(readlink -f "$0")")
 
-mkdir -p .cache
-mkdir -p .ivy2
-mkdir -p .sbt
+mkdir -p ${DIR}/.cache
+mkdir -p ${DIR}/.ivy2
+mkdir -p ${DIR}/.sbt
 
 exec podman \
 	run --rm -it \

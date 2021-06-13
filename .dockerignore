@@ -28,5 +28,5 @@ front/yarn-error.log*
 .ivy2
 .sbt
 **/target
-data/
+data/db.sqlite
 **/RUNNING_PID

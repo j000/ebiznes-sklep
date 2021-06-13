@@ -9,10 +9,6 @@ dist/
 # Dependency directories
 node_modules/
 
-# dotenv environment variables file
-.env
-.env.test
-
 # yarn v2
 # from yarn docs
 .yarn/*

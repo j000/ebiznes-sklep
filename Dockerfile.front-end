@@ -3,9 +3,7 @@ USER node
 WORKDIR /home/node
 ENV NODE_ENV=production
 RUN ["mkdir", "-p", "./.yarn/"]
-COPY front/package.json ./package.json
-COPY front/yarn.lock ./
-COPY front/.yarnrc.yml ./
+COPY front/package.json front/yarn.lock front/.yarnrc.yml ./
 COPY --chown=node front/.pnp.js ./
 COPY --chown=node front/.yarn/ ./.yarn/
 RUN ["yarn", "install", "--immutable", "--inline-builds"]
