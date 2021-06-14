@@ -1,9 +1,9 @@
 import React, { useState, Component } from "react";
 
 export const endpoint = (
-	["", "80", "443"].includes(window.location.port)
-	? '/api'
-	: 'http://localhost:9000/api'
+	window.location.hostname === "localhost" || window.location.hostname.startsWith('127.')
+	? 'http://localhost:9000/api'
+	: 'https://ebiznesapi.azurewebsites.net/api'
 );
 
 export const getRequest = async (url, data, method='GET') => {
