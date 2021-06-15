@@ -13,10 +13,10 @@ import utils.DBImplicits
 class BasketController @Inject() (
   repo: BasketRepository,
   messagesAction: MessagesActionBuilder,
-  dbExecutor: DBImplicits,
 )(
   implicit
   ec: ExecutionContext,
+  dbExecutor: DBImplicits,
 ) extends InjectedController {
   import dbExecutor.executeOperation
   import views.html.basket._

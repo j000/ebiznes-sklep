@@ -15,12 +15,12 @@ import utils.DBImplicits
 class BookController @Inject() (
   repo: BookRepository,
   messagesAction: MessagesActionBuilder,
-  dbExecutor: DBImplicits,
   authorRepo: AuthorRepository,
   genreRepo: GenreRepository,
 )(
   implicit
   ec: ExecutionContext,
+  dbExecutor: DBImplicits,
 ) extends InjectedController {
   import dbExecutor.executeOperation
   import views.html.book._

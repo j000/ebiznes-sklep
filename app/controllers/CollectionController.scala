@@ -13,10 +13,10 @@ import utils.DBImplicits
 class CollectionController @Inject() (
   repo: CollectionRepository,
   messagesAction: MessagesActionBuilder,
-  dbExecutor: DBImplicits,
 )(
   implicit
   ec: ExecutionContext,
+  dbExecutor: DBImplicits,
 ) extends InjectedController {
   import dbExecutor.executeOperation
   import views.html.collection._

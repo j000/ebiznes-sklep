@@ -14,10 +14,10 @@ import utils.DBImplicits
 class ReviewController @Inject() (
   repo: ReviewRepository,
   messagesAction: MessagesActionBuilder,
-  dbExecutor: DBImplicits,
 )(
   implicit
   ec: ExecutionContext,
+  dbExecutor: DBImplicits,
 ) extends InjectedController {
   import dbExecutor.executeOperation
   import views.html.review._

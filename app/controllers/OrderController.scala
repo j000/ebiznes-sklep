@@ -13,10 +13,10 @@ import utils.DBImplicits
 class OrderController @Inject() (
   repo: OrderRepository,
   messagesAction: MessagesActionBuilder,
-  dbExecutor: DBImplicits,
 )(
   implicit
   ec: ExecutionContext,
+  dbExecutor: DBImplicits,
 ) extends InjectedController {
   import dbExecutor.executeOperation
   import views.html.order._
