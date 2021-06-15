@@ -21,6 +21,13 @@ libraryDependencies ++= Seq(
 		"org.webjars.npm" % "milligram" % "1.3.0",
 )
 
+libraryDependencies ++= Seq(
+	"com.mohiva" %% "play-silhouette" % "7.0.0",
+	"com.mohiva" %% "play-silhouette-password-bcrypt" % "7.0.0",
+	"com.mohiva" %% "play-silhouette-crypto-jca" % "7.0.0",
+	"com.mohiva" %% "play-silhouette-persistence" % "7.0.0",
+)
+
 // Adds additional packages into Twirl
 TwirlKeys.templateImports += "helpers._"
 TwirlKeys.templateImports += "components._"

@@ -11,8 +11,7 @@
 		<thead>
 			<tr>
 				<th scope="column">ID</th>
-				<th scope="column">Login</th>
-				<th scope="column">Password</th>
+				<th scope="column">Nick</th>
 				<th scope="column"></th>
 				<th scope="column"></th>
 			</tr>
@@ -21,8 +20,7 @@
 			@users.map { a =>
 				<tr>
 					<td>@a.id</td>
-					<td>@a.login</td>
-					<td>@a.password</td>
+					<td>@a.nick</td>
 					<td><a class="button" href="@routes.UserController.editForm(a.id.get)">Edit</a></td>
 					<td>
 						@delete(routes.UserController.deleteForm(a.id.get))

@@ -27,8 +27,7 @@
 		<fieldset>
 			<legend>User</legend>
 			@CSRF.formField
-			@inputText(data("login"), Symbol("_label") -> "Login")
-			@inputText(data("password"), Symbol("_label") -> "Password")
+			@inputText(data("nick"), Symbol("_label") -> "Nick")
 			@components.buttons("Update user")
 		</fieldset>
 	}

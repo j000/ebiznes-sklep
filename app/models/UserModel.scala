@@ -3,8 +3,10 @@ package models.UserModel
 import com.byteslounge.slickrepo.meta.{ Entity, Keyed }
 import play.api.libs.json._
 
-case class User(override val id: Option[Long], login: String, password: String)
-  extends Entity[User, Long] {
+case class User(
+  override val id: Option[Long],
+  nick: String,
+) extends Entity[User, Long] {
   def withId(id: Long): User = this.copy(id = Some(id))
 }
 
@@ -33,9 +35,8 @@ class UserRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)
     extends Table[User](tag, "Users")
     with Keyed[Long] {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
-    def login = column[String]("login")
-    def password = column[String]("password")
-    def * = (id.?, login, password) <> ((User.apply _).tupled, User.unapply)
+    def nick = column[String]("nick")
+    def * = (id.?, nick) <> ((User.apply _).tupled, User.unapply)
   }
 
   def delete(id: Long): DBIO[Int] = {

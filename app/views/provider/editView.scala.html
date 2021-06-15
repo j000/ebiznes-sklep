@@ -1,0 +1,39 @@
+@import models.ProviderModel.Provider
+@(data: Form[Provider], id: Long = 0)(implicit request: MessagesRequestHeader)
+@main("Providers") {
+<div class="container">
+	@if(id > 0) {
+		<h1>Edit provider @id</h1>
+	} else {
+		<h1>Create new provider</h1>
+	}
+	@* Flash shows updates to a page *@
+	@request.flash.data.map{ case (name, value) =>
+		<div>@name: @value</div>
+	}
+	@* Global errors are not tied to any particular form field *@
+	@if(data.hasGlobalErrors) {
+		@data.globalErrors.map { error: FormError =>
+			<div>
+				@error.key: @error.message
+			</div>
+		}
+	}
+	@form(if (id > 0) {
+		routes.ProviderController.updateForm(id)
+	} else {
+		routes.ProviderController.saveForm()
+	}) {
+		<fieldset>
+			<legend>Provider</legend>
+			@CSRF.formField
+			@inputText(data("userID"), Symbol("_label") -> "User ID")
+			@inputText(data("providerID"), Symbol("_label") -> "Provider ID")
+			@inputText(data("providerKey"), Symbol("_label") -> "Provider Key")
+			@components.buttons("Update provider")
+		</fieldset>
+	}
+	@delete(routes.ProviderController.deleteForm(id))
+	<a class="button" href="@routes.ProviderController.listForm()">Back</a>
+</div>
+}
