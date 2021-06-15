@@ -12,7 +12,7 @@ body {
 	font-family: 'Overpass', 'Josefin Sans', 'Lato', 'Roboto', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
 	quotes: "\201E" "\201D";
 
-	> :first-child {
+	> main {
 		min-height: 100vh;
 		display: flex;
 		flex-direction: column;

@@ -14,12 +14,12 @@ libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "5.1.0
 libraryDependencies += "org.xerial" % "sqlite-jdbc" % "3.34.0"
 libraryDependencies += "com.typesafe.play" %% "play-slick" % "5.0.0"
 libraryDependencies += "com.typesafe.play" %% "play-slick-evolutions" % "5.0.0"
-libraryDependencies += evolutions
-libraryDependencies += "io.github.nafg" %% "slick-additions" % "0.11.1"
-libraryDependencies += "io.github.nafg" %% "slick-additions-entity" % "0.11.1"
 libraryDependencies += "com.byteslounge" %% "slick-repo" % "1.6.1"
-libraryDependencies += "org.webjars.npm" % "normalize.css" % "8.0.1"
-libraryDependencies += "org.webjars.npm" % "milligram" % "1.3.0"
+
+libraryDependencies ++= Seq(
+		"org.webjars.npm" % "normalize.css" % "8.0.1",
+		"org.webjars.npm" % "milligram" % "1.3.0",
+)
 
 // Adds additional packages into Twirl
 TwirlKeys.templateImports += "helpers._"
