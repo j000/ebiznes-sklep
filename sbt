@@ -11,7 +11,6 @@ exec podman \
 	-v ${DIR}/.cache:/home/app/.cache \
 	-v ${DIR}/.ivy2:/home/app/.ivy2 \
 	--tmpfs /home/app/.cache/JNA \
-	--tmpfs /home/app/.bsp \
 	-v ${DIR}:/home/app/project \
 	--tmpfs /home/app/project/target/global-logging \
 	--tmpfs /home/app/project/target/scala-2.13/update/update_cache_2.13 \
