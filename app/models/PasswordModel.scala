@@ -58,4 +58,5 @@ class PasswordRepository @Inject() (
   def delete(id: Long): DBIO[Int] = {
     findOneCompiled(id).delete
   }
+
 }

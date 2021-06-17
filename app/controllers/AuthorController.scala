@@ -34,7 +34,8 @@ class AuthorController @Inject() (
       .body
       .validate[Author]
       .fold(
-        problems => Future.successful(BadRequest(Json.obj("error" -> "Invalid Json"))),
+        problems =>
+          Future.successful(BadRequest(Json.obj("error" -> "Invalid Json"))),
         input => {
           repo
             .save(input.copy(id = None))

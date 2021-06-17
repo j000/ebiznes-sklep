@@ -8,8 +8,7 @@ case class Payment(
   order_id: Long,
   amount: Long,
   comment: Option[String],
-)
-  extends Entity[Payment, Long] {
+) extends Entity[Payment, Long] {
   def withId(id: Long): Payment = this.copy(id = Some(id))
 }
 
@@ -42,7 +41,11 @@ class PaymentRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)
     def order_id = column[Long]("order_id")
     def amount = column[Long]("amount")
     def comment = column[Option[String]]("comment")
-    def * = (id.?, order_id, amount, comment) <> ((Payment.apply _).tupled, Payment.unapply)
+
+    def * =
+      (id.?, order_id, amount, comment) <>
+        ((Payment.apply _).tupled, Payment.unapply)
+
   }
 
   def delete(id: Long): DBIO[Int] = {

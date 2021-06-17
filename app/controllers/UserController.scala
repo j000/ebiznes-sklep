@@ -34,7 +34,8 @@ class UserController @Inject() (
       .body
       .validate[User]
       .fold(
-        problems => Future.successful(BadRequest(Json.obj("error" -> "Invalid Json"))),
+        problems =>
+          Future.successful(BadRequest(Json.obj("error" -> "Invalid Json"))),
         input => {
           repo
             .save(input.copy(id = None))
@@ -84,10 +85,9 @@ class UserController @Inject() (
   }
 
   val form = Form(
-    mapping(
-      "id" -> ignored(None: Option[Long]),
-      "nick" -> nonEmptyText,
-    )(User.apply)(User.unapply),
+    mapping("id" -> ignored(None: Option[Long]), "nick" -> nonEmptyText)(
+      User.apply,
+    )(User.unapply),
   )
 
   def listForm(

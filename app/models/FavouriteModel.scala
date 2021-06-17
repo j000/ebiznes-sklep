@@ -3,13 +3,13 @@ package models.FavouriteModel
 import com.byteslounge.slickrepo.meta.{ Entity, Keyed }
 import play.api.libs.json._
 
-case class Favourite(override val id: Option[Long],
+case class Favourite(
+  override val id: Option[Long],
   user_id: Long,
   book_id: Option[Long],
   author_id: Option[Long],
   genre_id: Option[Long],
-)
-  extends Entity[Favourite, Long] {
+) extends Entity[Favourite, Long] {
   def withId(id: Long): Favourite = this.copy(id = Some(id))
 }
 
@@ -43,7 +43,11 @@ class FavouriteRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)
     def book_id = column[Option[Long]]("book_id")
     def author_id = column[Option[Long]]("author_id")
     def genre_id = column[Option[Long]]("genre_id")
-    def * = (id.?, user_id, book_id, author_id, genre_id) <> ((Favourite.apply _).tupled, Favourite.unapply)
+
+    def * =
+      (id.?, user_id, book_id, author_id, genre_id) <>
+        ((Favourite.apply _).tupled, Favourite.unapply)
+
   }
 
   def delete(id: Long): DBIO[Int] = {

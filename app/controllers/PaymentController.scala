@@ -34,7 +34,8 @@ class PaymentController @Inject() (
       .body
       .validate[Payment]
       .fold(
-        problems => Future.successful(BadRequest(Json.obj("error" -> "Invalid Json"))),
+        problems =>
+          Future.successful(BadRequest(Json.obj("error" -> "Invalid Json"))),
         input => {
           repo
             .save(input.copy(id = None))
@@ -89,9 +90,7 @@ class PaymentController @Inject() (
       "order_id" -> longNumber,
       "amount" -> longNumber,
       "comment" -> optional(text),
-    )(
-      Payment.apply,
-    )(Payment.unapply),
+    )(Payment.apply)(Payment.unapply),
   )
 
   def listForm(
