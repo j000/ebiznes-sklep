@@ -12,6 +12,9 @@
 			<tr>
 				<th scope="column">ID</th>
 				<th scope="column">Nick</th>
+				<th scope="column">Provider ID</th>
+				<th scope="column">Provider Key</th>
+				<th scope="column">E-Mail</th>
 				<th scope="column"></th>
 				<th scope="column"></th>
 			</tr>
@@ -21,6 +24,9 @@
 				<tr>
 					<td>@a.id</td>
 					<td>@a.nick</td>
+					<td>@a.providerId</td>
+					<td>@a.providerKey</td>
+					<td>@a.email</td>
 					<td><a class="button" href="@routes.UserController.editForm(a.id.get)">Edit</a></td>
 					<td>
 						@delete(routes.UserController.deleteForm(a.id.get))

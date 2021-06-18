@@ -155,4 +155,9 @@ POST   /payment/$id<[1-9][0-9]*>                 controllers.PaymentController.u
 GET    /payment/$id<[1-9][0-9]*>                 controllers.PaymentController.editForm(id: Long)
 POST   /payment/$id<[1-9][0-9]*>/delete          controllers.PaymentController.deleteForm(id: Long)
 
+POST   /register                                 controllers.SignUpController.signUp
+POST   /signIn                                   controllers.SignInController.signIn
+POST   /signOut                                  controllers.SignInController.signOut
+GET    /authenticate/:provider                   controllers.SocialAuthController.authenticate(provider: String)
+
 GET    /*file                                    controllers.Assets.at(path="/public", file)

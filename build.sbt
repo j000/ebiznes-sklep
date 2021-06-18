@@ -29,6 +29,10 @@ libraryDependencies ++= Seq(
 	"com.mohiva" %% "play-silhouette-persistence" % "7.0.0",
 )
 
+libraryDependencies += ehcache
+libraryDependencies += "com.iheart" %% "ficus" % "1.5.0"
+libraryDependencies += "net.codingwell" %% "scala-guice" % "5.0.1"
+
 // Adds additional packages into Twirl
 TwirlKeys.templateImports += "helpers._"
 TwirlKeys.templateImports += "components._"
