@@ -78,7 +78,7 @@ const userReducer = (state, action) => {
 			console.log('removeBookFromFavourites ', action.book_id);
 			const newState = {...state};
 			const { book_id } = action;
-			newState.favourites = newState.favourites.filter((x) => !(x.book_id && x.book_id == book_id));
+			newState.favourites = newState.favourites.filter((x) => !(x.book_id && x.book_id === book_id));
 			// send to backend
 			return newState;
 		}
@@ -96,7 +96,7 @@ const userReducer = (state, action) => {
 			console.log('removeAuthorFromFavourites ', action.author_id);
 			const newState = {...state};
 			const { author_id } = action;
-			newState.favourites = newState.favourites.filter((x) => !(x.author_id && x.author_id == author_id));
+			newState.favourites = newState.favourites.filter((x) => !(x.author_id && x.author_id === author_id));
 			// send to backend
 			return newState;
 		}
@@ -138,7 +138,7 @@ export const UserProvider = ({children}) => {
 					if (data && data.error)
 						throw data;
 					if (data && data.success === false)
-						throw {error: data.message || 'error'}
+						throw new Error(data.message || 'Register failed')
 					// register does not log in
 					// userDispatch({type: 'setUser', data});
 				});
@@ -149,7 +149,7 @@ export const UserProvider = ({children}) => {
 					if (data && data.error)
 						throw data;
 					if (data && data.success === false)
-						throw {error: data.message || 'error'}
+						throw new Error(data.message || 'Sign in failed')
 					userDispatch({type: 'setUser', data});
 				});
 			}
@@ -164,21 +164,21 @@ export const UserProvider = ({children}) => {
 	};
 
 	React.useEffect(() => {
-		const user = Cookie.get('profile');
-		if (!user)
+		const profile = Cookie.get('profile');
+		if (!profile)
 			return;
 		Cookie.remove('profile');
 		userDispatch({type: 'setUser', data: {
-			email: user,
+			email: profile,
 		}});
 	}, []);
 
 	React.useEffect(() => {
 		getRequest('check')
-			.then((user) => {
-				console.log(user);
-				if (user.email != 'Guest')
-					userDispatch({type: 'setUser', data: user});
+			.then((data) => {
+				console.log(data);
+				if (data.email !== 'Guest')
+					userDispatch({type: 'setUser', data});
 			});
 	}, []);
 

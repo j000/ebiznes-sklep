@@ -7,11 +7,11 @@ import { useStore } from '~/src/contexts/StoreContext';
 export default () => {
 	const [{
 		authors
-	},] = useStore();
+	}] = useStore();
 	const [{
 		user,
 		favourites,
-	},] = useUser();
+	}] = useUser();
 
 	if (!user?.email)
 		return (<Redirect to="/"/>);

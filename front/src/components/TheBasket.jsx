@@ -8,7 +8,7 @@ export const TheBasket = (props) => {
 	}, userDispatch] = useUser();
 	const [{
 		books,
-	},] = useStore();
+	}] = useStore();
 
 	return (
 		<>

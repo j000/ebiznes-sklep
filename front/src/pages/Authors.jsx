@@ -7,7 +7,7 @@ export default () => {
 	const [{
 		authors,
 		books,
-	},] = useStore();
+	}] = useStore();
 	const [{ user, favourites }, userDispatch] = useUser();
 
 	const addAuthorToFavourites = (author_id) => {

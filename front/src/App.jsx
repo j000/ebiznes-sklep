@@ -6,7 +6,6 @@ import { StoreProvider } from '~/src/contexts/StoreContext';
 import { UserProvider } from '~/src/contexts/UserContext';
 import { ErrorBoundary } from '~/src/utils';
 import LayoutMain from '~/src/LayoutMain';
-import HomePage from '~/src/pages/HomePage';
 import Register from '~/src/pages/Register';
 import Signin from '~/src/pages/Signin';
 

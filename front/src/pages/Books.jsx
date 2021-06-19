@@ -5,7 +5,7 @@ import { useStore } from '~/src/contexts/StoreContext';
 export default () => {
 	const [{
 		books,
-	},] = useStore();
+	}] = useStore();
 
 	return (
 		<section className="container">

@@ -1,20 +1,15 @@
 import React from "react";
 import { useHistory } from "react-router";
 import { Formik, Field, Form, ErrorMessage } from 'formik';
-import { endpoint, getRequest } from '~/src/utils';
+import { endpoint } from '~/src/utils';
 import { useUser } from '~/src/contexts/UserContext';
 
 ////////////////////////////////////////
 
 export default (props) => {
-	const fields = {
-		email: "E-Mail",
-		password: "Password",
-	};
-
 	const [error, setError] = React.useState();
 
-	const [user, setUser] = React.useState({
+	const [user] = React.useState({
 		email: '',
 		password: '',
 	});
@@ -30,14 +25,14 @@ export default (props) => {
 			<Formik
 				initialValues={user}
 				enableReinitialize={true}
-				onSubmit={async (user, { setSubmitting }) => {
+				onSubmit={async (form, { setSubmitting }) => {
 					setError();
-					userDispatch({type: 'signIn', user})
+					userDispatch({type: 'signIn', form})
 					.then(() => {
 						history.push('/');
 					})
 					.catch((e) => {
-						setError(e.error);
+						setError(e.message);
 					})
 					.finally(() => {
 						setSubmitting(false);
