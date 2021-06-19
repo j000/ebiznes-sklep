@@ -92,13 +92,6 @@ POST   /user/$id<[1-9][0-9]*>                    controllers.UserController.upda
 GET    /user/$id<[1-9][0-9]*>                    controllers.UserController.editForm(id: Long)
 POST   /user/$id<[1-9][0-9]*>/delete             controllers.UserController.deleteForm(id: Long)
 
-GET    /provider                                 controllers.ProviderController.listForm()
-POST   /provider/new                             controllers.ProviderController.saveForm()
-GET    /provider/new                             controllers.ProviderController.createForm()
-POST   /provider/$id<[1-9][0-9]*>                controllers.ProviderController.updateForm(id: Long)
-GET    /provider/$id<[1-9][0-9]*>                controllers.ProviderController.editForm(id: Long)
-POST   /provider/$id<[1-9][0-9]*>/delete         controllers.ProviderController.deleteForm(id: Long)
-
 GET    /collection                               controllers.CollectionController.listForm()
 POST   /collection/new                           controllers.CollectionController.saveForm()
 GET    /collection/new                           controllers.CollectionController.createForm()
@@ -155,9 +148,12 @@ POST   /payment/$id<[1-9][0-9]*>                 controllers.PaymentController.u
 GET    /payment/$id<[1-9][0-9]*>                 controllers.PaymentController.editForm(id: Long)
 POST   /payment/$id<[1-9][0-9]*>/delete          controllers.PaymentController.deleteForm(id: Long)
 
-POST   /register                                 controllers.SignUpController.signUp
-POST   /signIn                                   controllers.SignInController.signIn
-POST   /signOut                                  controllers.SignInController.signOut
-GET    /authenticate/:provider                   controllers.SocialAuthController.authenticate(provider: String)
++ nocsrf
+POST   /api/register                             controllers.SignUpController.signUp()
++ nocsrf
+POST   /api/signIn                               controllers.SignInController.signIn()
+GET    /api/signOut                              controllers.SignInController.signOut()
+GET    /api/authenticate/:provider               controllers.SocialAuthController.authenticate(provider: String)
+GET    /api/check                                controllers.SignInController.check()
 
 GET    /*file                                    controllers.Assets.at(path="/public", file)

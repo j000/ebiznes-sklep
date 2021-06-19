@@ -1,18 +1,20 @@
 import React from 'react';
-import { loadToMap } from '~/src/utils';
+import { loadToMap, getRequest } from '~/src/utils';
+import Cookie from 'js-cookie';
 
 const UserContext = React.createContext();
 
-const getFavourites = () => loadToMap('favourite');
+const getFavourites = () => getRequest('favourite');
 const getBasket = () => loadToMap('basket');
 const getOrders = () => loadToMap('order');
 const getPayment = () => loadToMap('payment');
 
 const userState = {
-	favourites: {},
+	favourites: [],
 	basket: {},
 	orders: {},
 	payments: {},
+	user: {},
 };
 
 let loading = false;
@@ -34,6 +36,10 @@ const userReducer = (state, action) => {
 		case 'setPayment': {
 			console.log('setPayment to ', action.data);
 			return {...state, payments: action.data || {}};
+		}
+		case 'setUser': {
+			console.log('setUser to ', action.data);
+			return {...state, user: action.data || {}};
 		}
 		case 'addToBasket': {
 			console.log('addToBasket ', action.book_id);
@@ -58,6 +64,42 @@ const userReducer = (state, action) => {
 			}
 			return newState;
 		}
+		case 'addBookToFavourites': {
+			console.log('addBookToFavourites ', action.book_id);
+			const newState = {...state};
+			const { book_id } = action;
+			if (!newState.favourites.some((elem) => elem.book_id === book_id)) {
+				newState.favourites.push({book_id});
+				// send to backend
+			}
+			return newState;
+		}
+		case 'removeBookFromFavourites': {
+			console.log('removeBookFromFavourites ', action.book_id);
+			const newState = {...state};
+			const { book_id } = action;
+			newState.favourites = newState.favourites.filter((x) => !(x.book_id && x.book_id == book_id));
+			// send to backend
+			return newState;
+		}
+		case 'addAuthorToFavourites': {
+			console.log('addAuthorToFavourites ', action.author_id);
+			const newState = {...state};
+			const { author_id } = action;
+			if (!newState.favourites.some((elem) => elem.author_id === author_id)) {
+				newState.favourites.push({author_id});
+				// send to backend
+			}
+			return newState;
+		}
+		case 'removeAuthorFromFavourites': {
+			console.log('removeAuthorFromFavourites ', action.author_id);
+			const newState = {...state};
+			const { author_id } = action;
+			newState.favourites = newState.favourites.filter((x) => !(x.author_id && x.author_id == author_id));
+			// send to backend
+			return newState;
+		}
 		case 'cleanAll': {
 			console.log('cleanAll');
 			return {...userState};
@@ -79,26 +121,66 @@ export const UserProvider = ({children}) => {
 				return;
 			}
 			case "loadFavourites": {
-				getFavourites().then((data) => userDispatch({type: 'setFavourites', data}));
-				return;
+				return getFavourites().then((data) => userDispatch({type: 'setFavourites', data}));
 			}
 			case "loadBasket": {
-				getBasket().then((data) => userDispatch({type: 'setBasket', data}));
-				return;
+				return getBasket().then((data) => userDispatch({type: 'setBasket', data}));
 			}
 			case "loadOrders": {
-				getOrders().then((data) => userDispatch({type: 'setOrder', data}));
-				return;
+				return getOrders().then((data) => userDispatch({type: 'setOrder', data}));
 			}
 			case "loadPayments": {
-				getPayment().then((data) => userDispatch({type: 'setPayment', data}));
-				return;
+				return getPayment().then((data) => userDispatch({type: 'setPayment', data}));
+			}
+			case "register": {
+				return getRequest('register', action.user, 'POST')
+				.then((data) => {
+					if (data && data.error)
+						throw data;
+					if (data && data.success === false)
+						throw {error: data.message || 'error'}
+					// register does not log in
+					// userDispatch({type: 'setUser', data});
+				});
+			}
+			case "signIn": {
+				return getRequest('signIn', action.user, 'POST')
+				.then((data) => {
+					if (data && data.error)
+						throw data;
+					if (data && data.success === false)
+						throw {error: data.message || 'error'}
+					userDispatch({type: 'setUser', data});
+				});
+			}
+			case "signOut": {
+				return getRequest('signOut')
+				.then((data) => userDispatch({type: 'cleanAll'}));
 			}
 			default: {
 				userDispatch(action);
 			}
 		}
 	};
+
+	React.useEffect(() => {
+		const user = Cookie.get('profile');
+		if (!user)
+			return;
+		Cookie.remove('profile');
+		userDispatch({type: 'setUser', data: {
+			email: user,
+		}});
+	}, []);
+
+	React.useEffect(() => {
+		getRequest('check')
+			.then((user) => {
+				console.log(user);
+				if (user.email != 'Guest')
+					userDispatch({type: 'setUser', data: user});
+			});
+	}, []);
 
 	return (
 		<UserContext.Provider value={[user, customDispatch]}>

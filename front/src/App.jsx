@@ -7,9 +7,12 @@ import { UserProvider } from '~/src/contexts/UserContext';
 import { ErrorBoundary } from '~/src/utils';
 import LayoutMain from '~/src/LayoutMain';
 import HomePage from '~/src/pages/HomePage';
+import Register from '~/src/pages/Register';
+import Signin from '~/src/pages/Signin';
 
 const Admin = React.lazy(() => import('~/src/pages/Admin'));
-const Books = React.lazy(() => import('~/src/pages/Books'));
+import Books from '~/src/pages/Books';
+const Authors = React.lazy(() => import('~/src/pages/Authors'));
 const Favourites = React.lazy(() => import('~/src/pages/Favourites'));
 
 const Loading = () => {
@@ -48,17 +51,23 @@ const App = () => {
 							<ErrorBoundary className="container">
 								<React.Suspense fallback={<Loading />}>
 									<CustomSwitch>
-										<Route path="/" exact>
-											<HomePage />
-										</Route>
 										<Route path="/admin/">
 											<Admin switch={CustomSwitch} />
 										</Route>
-										<Route path="/books">
+										<Route path="/" exact>
 											<Books />
 										</Route>
 										<Route path="/favourites">
 											<Favourites />
+										</Route>
+										<Route path="/Authors">
+											<Authors />
+										</Route>
+										<Route path="/register">
+											<Register />
+										</Route>
+										<Route path="/signin">
+											<Signin />
 										</Route>
 									</CustomSwitch>
 								</React.Suspense>

@@ -21,7 +21,7 @@ import com.mohiva.play.silhouette.crypto.{
 import com.mohiva.play.silhouette.impl.authenticators._
 import com.mohiva.play.silhouette.impl.providers._
 import com.mohiva.play.silhouette.impl.providers.oauth2.{
-  FacebookProvider,
+  GitHubProvider,
   GoogleProvider,
 }
 import com.mohiva.play.silhouette.impl.providers.state.{
@@ -171,9 +171,9 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   @Provides
   def provideSocialProviderRegistry(
     googleProvider: GoogleProvider,
-    facebookProvider: FacebookProvider,
+    githubProvider: GitHubProvider,
   ): SocialProviderRegistry = SocialProviderRegistry(
-    Seq(googleProvider, facebookProvider),
+    Seq(googleProvider, githubProvider),
   )
 
   @Provides
@@ -189,15 +189,15 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
-  def provideFacebookProvider(
+  def provideGithubProvider(
     httpLayer: HTTPLayer,
     socialStateHandler: SocialStateHandler,
     configuration: Configuration,
-  ): FacebookProvider =
-    new FacebookProvider(
+  ): GitHubProvider =
+    new GitHubProvider(
       httpLayer,
       socialStateHandler,
-      configuration.underlying.as[OAuth2Settings]("silhouette.facebook"),
+      configuration.underlying.as[OAuth2Settings]("silhouette.github"),
     )
 
   @Provides

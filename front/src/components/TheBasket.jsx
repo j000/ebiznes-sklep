@@ -16,7 +16,7 @@ export const TheBasket = (props) => {
 				className="button button-outline"
 				tabIndex="0"
 			>
-				Basket {Object.entries(basket).reduce((sum, [k, v]) => sum + v, 0) || ''}
+				Basket {Object.entries(basket).reduce((sum, [k, v]) => sum + v, 0) || ''} &#x25BC;
 			</a>
 			<ul className="dropdown">
 				{ Object.entries(basket).map(([book_id, count]) => (

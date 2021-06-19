@@ -110,6 +110,8 @@ header {
 			right: 0;
 			z-index: 1000;
 			width: 100%;
+			outline: 1px solid $color-primary;
+			border-radius: .4rem;
 
 			@include desktop {
 				width: auto;
@@ -184,14 +186,21 @@ input[type="submit"] {
 		border-color: $red;
 	}
 
-	&.active {
-		// background-color: rgba(0, 0, 0, 10%);
+	&:not(.button-outline).active {
+		background-color: $black;
+
+		&:focus,
+		&:hover {
+			background-color: $black;
+		}
+	}
+
+	&.button-outline.active {
 		color: $black;
 		border-color: $black;
 
 		&:focus,
 		&:hover {
-			// background-color: rgba(0, 0, 0, 15%);
 			color: $black;
 			border-color: $black;
 		}

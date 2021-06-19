@@ -9,6 +9,7 @@ export default () => {
 
 	return (
 		<section className="container">
+			<h1>Books</h1>
 			<BookList list={ Object.values(books).map((book) => book.id) } />
 		</section>
 	);

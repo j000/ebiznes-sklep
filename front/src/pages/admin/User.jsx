@@ -9,8 +9,10 @@ const baseTitle = 'Users';
 const editTitle = 'Edit user';
 
 const properties = {
-	login: 'Login',
-	password: 'Password',
+	email: 'E-Mail',
+	nick: 'Nick',
+	providerId: 'Provider ID',
+	providerKey: 'Provider key',
 };
 
 const propertiesAttributes = {};

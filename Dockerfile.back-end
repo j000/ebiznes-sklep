@@ -6,14 +6,14 @@ COPY app ./app/
 COPY conf ./conf/
 COPY styles/ ./app/assets/styles/
 RUN ["sbt", "clean", "stage"]
-RUN ["mkdir", "/home/app/project/target/universal/stage/data/"]
-RUN ["chmod", "0777", "/home/app/project/target/universal/stage/data/"]
+RUN ["mkdir", "/home/sbt/app/target/universal/stage/data/"]
+RUN ["chmod", "0777", "/home/sbt/app/target/universal/stage/data/"]
 
 FROM gcr.io/distroless/java:8 as back-end
 USER nonroot
 WORKDIR /home/nonroot
 # COPY --chown=nonroot --from=back-end-builder /home/app/project/target/scala-2.13/sklep-assembly-1.0-SNAPSHOT.jar ./sklep.jar
-COPY --from=back-end-builder /home/app/project/target/universal/stage/ ./
+COPY --from=back-end-builder /home/sbt/app/target/universal/stage/ ./
 EXPOSE 9000
 ENTRYPOINT ["java"]
 CMD ["-Duser.dir=/home/nonroot", "-cp", "conf/:lib/*", "play.core.server.ProdServerStart"]

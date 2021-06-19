@@ -10,25 +10,6 @@ CREATE TABLE "Users" (
   "email" TEXT
 );
 
-CREATE TABLE "Providers" (
-  "id" INTEGER PRIMARY KEY,
-  "user_id" INTEGER NOT NULL,
-  "provider_id" TEXT,
-  "provider_key" TEXT,
-
-  FOREIGN KEY(user_id) REFERENCES Users(id)
-);
-
-CREATE TABLE "Passwords" (
-  "id" INTEGER PRIMARY KEY,
-  "provider_id" INTEGER NOT NULL,
-  "hasher" TEXT,
-  "password" TEXT,
-  "salt" TEXT,
-
-  FOREIGN KEY(provider_id) REFERENCES Providers(id)
-);
-
 CREATE TABLE "PasswordInfo" (
   "id" INTEGER PRIMARY KEY,
   "providerId" TEXT,
@@ -51,8 +32,6 @@ CREATE TABLE "OAuth2Info" (
 
 DROP TABLE "OAuth2Info";
 DROP TABLE "PasswordInfo";
-DROP TABLE "Passwords";
-DROP TABLE "Providers";
 DROP TABLE "Users";
 
 ALTER TABLE "Users_old" RENAME TO "Users";

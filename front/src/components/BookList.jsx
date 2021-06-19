@@ -9,11 +9,25 @@ export default ({ list }) => {
 		genres,
 		reviews,
 	}, ] = useStore();
-	const [, userDispatch] = useUser();
+	const [{ user, basket, favourites }, userDispatch] = useUser();
 
 	const addToBasket = (id) => {
 		userDispatch({ type: 'addToBasket', book_id: id });
 	};
+
+	const removeFromBasket = (id) => {
+		userDispatch({ type: 'removeFromBasket', book_id: id });
+	};
+
+	const addBookToFavourites = (id) => {
+		userDispatch({ type: 'addBookToFavourites', book_id: id });
+	};
+
+	const removeBookFromFavourites = (id) => {
+		userDispatch({ type: 'removeBookFromFavourites', book_id: id });
+	};
+
+	const isInFavourites = (id) => favourites && favourites.some((elem) => elem.book_id === id);
 
 	return (<ul>
 		{
@@ -23,14 +37,36 @@ export default ({ list }) => {
 						{ book.title }
 					</q> by <i>{
 						authors?.[book.author_id]?.name || <>author #{book.author_id}</>
-					}</i> - {
-						genres?.[book.genre_id]?.name || <i>genre #{book.genre_id}</i>
-					} <a
-						onClick={ () => addToBasket(book.id) }
-					>
-						Add to basket
-					</a>
-					{
+						}</i> - {
+							genres?.[book.genre_id]?.name || <i>genre #{book.genre_id}</i>
+					} { user?.email && <>
+						<a
+							onClick={ () => addToBasket(book.id) }
+						>
+							Add to basket
+						</a> { basket && basket[book.id] && (
+								<a
+									onClick={ () => removeFromBasket(book.id) }
+								>
+									Remove from basket
+								</a>
+							)
+						} {
+							isInFavourites(book.id) ? (
+								<a
+									onClick={ () => removeBookFromFavourites(book.id) }
+								>
+									&#9733;
+								</a>
+							) : (
+								<a
+									onClick={ () => addBookToFavourites(book.id) }
+								>
+									&#9734;
+								</a>
+							)
+						}</>
+					} {
 						reviews?.[book.id]?.length && (
 							<ul>
 								{reviews?.[book.id]?.map((review) => (

@@ -61,16 +61,13 @@ class UserRepository @Inject() (
     findOneCompiled(id).delete
   }
 
-  override def retrieve(loginInfo: LoginInfo): Future[Option[User]] = {
-    val tmp =
-      tableQuery
-        .filter(u =>
-          u.providerId === loginInfo.providerID &&
-            u.providerKey === loginInfo.providerKey,
-        )
-        .result
-        .headOption
-    return tmp
-  }
+  override def retrieve(loginInfo: LoginInfo): Future[Option[User]] =
+    tableQuery
+      .filter(u =>
+        u.providerId === loginInfo.providerID &&
+          u.providerKey === loginInfo.providerKey,
+      )
+      .result
+      .headOption
 
 }

@@ -3184,6 +3184,7 @@ __metadata:
     "@babel/preset-react": ^7.13.13
     "@parcel/transformer-sass": v2.0.0-beta.3.1
     formik: ^2.2.8
+    js-cookie: ^2.2.1
     milligram: ^1.4.1
     normalize.css: ^8.0.1
     parcel: v2.0.0-beta.3.1
@@ -4188,6 +4189,13 @@ fsevents@~2.3.1:
   version: 0.1.2
   resolution: "isstream@npm:0.1.2"
   checksum: 8e6e5c4cf1823562db7035d2e7bac388412060fe9bc6727eca8c608def5aa57709165c51c2e68a2fce6ff0b64d79489501b84715060c5e8a477b87b6cbcd1eca
+  languageName: node
+  linkType: hard
+
+"js-cookie@npm:^2.2.1":
+  version: 2.2.1
+  resolution: "js-cookie@npm:2.2.1"
+  checksum: c110f78427cb7715f67c69df0b3430f7cf9dafb5ddb13014df171d4fb61ccda0b1caf9767412cde63cab4bad697a5d4ce83b0c2e7ec650ec9929ed70750d20ae
   languageName: node
   linkType: hard
 

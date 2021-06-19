@@ -1,4 +1,5 @@
-import React, { useState, Component } from "react";
+import React, { useState, Component } from 'react';
+import Cookie from 'js-cookie';
 
 export const endpoint = (
 	window.location.hostname === "localhost" || window.location.hostname.startsWith('127.')
@@ -7,7 +8,6 @@ export const endpoint = (
 );
 
 export const getRequest = async (url, data, method='GET') => {
-	console.log(window.location.port);
 	if (!url.startsWith('http')) {
 		url = `${endpoint}/${url}`;
 	}
@@ -16,7 +16,10 @@ export const getRequest = async (url, data, method='GET') => {
 		headers: {
 			'Accept': 'application/json',
 			'Content-type': 'application/json',
+			'Csrf-Token': Cookie.get('csrfToken'),
 		},
+		mode: 'cors',
+		credentials: 'include',
 		body: data ? JSON.stringify(data) : undefined,
 	});
 	return result.json();

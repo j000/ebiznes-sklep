@@ -18,5 +18,7 @@ exec podman \
 	-v java-target:/home/sbt/app/project/project \
 	-v java-target:/home/sbt/app/project/target \
 	--uidmap=101:0:1 \
+	-e GOOGLE_ID -e GOOGLE_SECRET \
+	-e GITHUB_ID -e GITHUB_SECRET \
 	j000/ebiznes \
 	sbt $*

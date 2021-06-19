@@ -14,6 +14,7 @@
 	},
 	"dependencies": {
 		"formik": "^2.2.8",
+		"js-cookie": "^2.2.1",
 		"milligram": "^1.4.1",
 		"normalize.css": "^8.0.1",
 		"react": "^17.0.2",
