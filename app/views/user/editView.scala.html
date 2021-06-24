@@ -26,7 +26,7 @@
 	}) {
 		<fieldset>
 			<legend>User</legend>
-			@{ /* @CSRF.formField */ }
+			@CSRF.formField
 			@inputText(data("nick"), Symbol("_label") -> "Nick")
 			@inputText(data("providerId"), Symbol("_label") -> "Provider ID")
 			@inputText(data("providerKey"), Symbol("_label") -> "Provider Key")

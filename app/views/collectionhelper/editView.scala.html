@@ -26,7 +26,7 @@
 	}) {
 		<fieldset>
 			<legend>CollectionHelper</legend>
-			@{ /* @CSRF.formField */ }
+			@CSRF.formField
 			@inputText(data("collection_id"), Symbol("_label") -> "Collection ID")
 			@inputText(data("book_id"), Symbol("_label") -> "Book ID")
 			@components.buttons("Update collectionhelper")

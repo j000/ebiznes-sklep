@@ -60,9 +60,7 @@ class SignInController @Inject() (
         .map(
           _.discardingCookies(
             DiscardingCookie(name = "PLAY_SESSION"),
-            DiscardingCookie(name = "OAuth2State"),
             DiscardingCookie(name = "csrfToken"),
-            DiscardingCookie(name = "Csrf-Token"),
           ),
         )
   }

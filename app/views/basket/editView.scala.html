@@ -26,7 +26,7 @@
 	}) {
 		<fieldset>
 			<legend>Basket</legend>
-			@{ /* @CSRF.formField */ }
+			@CSRF.formField
 			@inputText(data("user_id"), Symbol("_label") -> "User ID")
 			@inputText(data("book_id"), Symbol("_label") -> "Book ID")
 			@inputText(data("count"), Symbol("_label") -> "Count")

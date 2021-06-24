@@ -4,7 +4,7 @@ import Cookie from 'js-cookie';
 export const endpoint = (
 	window.location.hostname === "localhost" || window.location.hostname.startsWith('127.')
 	? 'http://localhost:9000/api'
-	: 'https://ebiznesapi.azurewebsites.net/api'
+	: 'https://ebiznes.azurewebsites.net/api'
 );
 
 export const getRequest = async (url, data, method='GET') => {
